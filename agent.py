@@ -53,7 +53,7 @@ def main():
             agent.tool_registry.process_tools(mcp_tools)
             
             while True:
-                user_input = input("Please enter a task to be completed by the LLM.")
+                user_input = input("\nPlease enter a task to be completed by the LLM.\n")
                 
                 if user_input.lower() in ["exit", "quit", "bye", "stop"]:
                         print("See you next time!")
