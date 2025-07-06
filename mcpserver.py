@@ -1,6 +1,7 @@
 from mcp.server import FastMCP
 
-mcp = FastMCP(name="MCP Server")
+mcp = FastMCP(name="MCP Server",
+              stateless_http=False)
 
 # SERVER TOOLS
 @mcp.tool()
@@ -10,4 +11,4 @@ def test_tool(sub: str, whole: str) -> bool:
     """
     return sub in whole
 
-mcp.run(transport="sse")
+mcp.run(transport="streamable-http")
