@@ -5,12 +5,17 @@ from openai import OpenAI
 from dotenv import load_dotenv
 import json
 
+# CONSTANTS
 AI_MODEL_ID = "gpt-4.1-nano"
 
+# Initialize MCP Server entity
 mcp = FastMCP(name="MCP Server",
               stateless_http=False)
 
+# Load env vars
 load_dotenv()
+
+# Create OpenAI client
 ai_client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
 
@@ -31,6 +36,7 @@ def storyboarder(prompt: str) -> dict:
         ]
     """
     
+    # Prompt LLM for storyboard plan
     response = ai_client.responses.create(
         model=AI_MODEL_ID,
         instructions="""
@@ -56,7 +62,9 @@ def storyboarder(prompt: str) -> dict:
         input=prompt
     )
     
+    # Returns LLM output JSON as dict
     return json.loads(response.output_text)
 
 
+# Run MCP server locally
 mcp.run(transport="streamable-http")
