@@ -1,0 +1,11 @@
+[project]
+name = "comic-agent"
+version = "0.1.0"
+description = "An LLM-based agent for generating children's comics with minimal effort."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "mcp[cli]>=1.11.0",
+    "openai>=1.95.1",
+    "strands-agents>=0.3.0",
+]
