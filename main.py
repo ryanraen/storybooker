@@ -2,6 +2,8 @@ import agent
 
 def main():
     print("Starting agent in main.py!")
+    
+    # Agent entry point
     agent.main()
 
 
