@@ -68,6 +68,9 @@ def storyboarder(prompt: str) -> dict:
     # Returns LLM output JSON as dict
     return json.loads(response.output_text)
 
+@mcp.tool()
+def image_gen(characters: list, bg_scenes: list) -> dict:
+    pass
 
 # Run MCP server locally
 mcp.run(transport="streamable-http")
