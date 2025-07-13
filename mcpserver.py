@@ -1,14 +1,62 @@
+import os
 from mcp.server import FastMCP
+from strands import tool
+from openai import OpenAI
+from dotenv import load_dotenv
+import json
+
+AI_MODEL_ID = "gpt-4.1-nano"
 
 mcp = FastMCP(name="MCP Server",
               stateless_http=False)
 
+load_dotenv()
+ai_client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+
+
 # SERVER TOOLS
+
 @mcp.tool()
-def test_tool(sub: str, whole: str) -> bool:
+def storyboarder(prompt: str) -> dict:
     """
-    test function that checks if sub is in whole
+    Given requirements for a children's story, generates a 6-panel comic storyboard plan that satisfies provided demands
+    Input: user prompt requirements for a story
+    Output: python dictionary of 6 panels as such:
+        [
+          {{"title": "...", 
+            "summary": "...", 
+            "characters": ["..."], 
+            "dialogue": [{"speaker": "...", "line": "..."}, ...]}},
+          ...
+        ]
     """
-    return sub in whole
+    
+    response = ai_client.responses.create(
+        model=AI_MODEL_ID,
+        instructions="""
+        You are a children's storyteller who structures comics in 6 panels.
+        Based on the user prompted story idea, create a structured 6-panel comic storyboard.
+
+        Rules:
+        1. Each panel should include 
+            - title: short (max 6 words)
+            - summary: what happens in that panel
+            - characters: list of character names in that panel
+            - dialogue: list of short exchanges (max 3)
+        2. Keep it engaging and age-appropriate.
+        3. Return it as a JSON list of 6 panels like this:
+                [
+                {{"title": "...", 
+                    "summary": "...", 
+                    "characters": ["..."], 
+                    "dialogue": [{"speaker": "...", "line": "..."}, ...]}},
+                ...
+                ]
+        """,
+        input=prompt
+    )
+    
+    return json.loads(response.output_text)
+
 
 mcp.run(transport="streamable-http")
