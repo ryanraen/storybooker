@@ -31,6 +31,7 @@ def storyboarder(prompt: str) -> dict:
           {{"title": "...", 
             "summary": "...", 
             "characters": ["..."], 
+            "background": "...", 
             "dialogue": [{"speaker": "...", "line": "..."}, ...]}},
           ...
         ]
@@ -48,14 +49,16 @@ def storyboarder(prompt: str) -> dict:
             - title: short (max 6 words)
             - summary: what happens in that panel
             - characters: list of character names in that panel
+            - background: description of the background setting in that panel
             - dialogue: list of short exchanges (max 3)
         2. Keep it engaging and age-appropriate.
         3. Return it as a JSON list of 6 panels like this:
                 [
                 {{"title": "...", 
-                    "summary": "...", 
-                    "characters": ["..."], 
-                    "dialogue": [{"speaker": "...", "line": "..."}, ...]}},
+                  "summary": "...", 
+                  "characters": ["..."], 
+                  "background": "...", 
+                  "dialogue": [{"speaker": "...", "line": "..."}, ...]}},
                 ...
                 ]
         """,
