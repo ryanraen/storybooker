@@ -6,19 +6,15 @@ from mcp.client.streamable_http import streamablehttp_client
 from dotenv import load_dotenv
 
 def main():
-    
-    # Connect to MCP Server
     print("Connecting to server...")
     mcp_server = MCPClient(lambda: streamablehttp_client("http://127.0.0.1:8000/mcp"))
 
-    # OPENAI MODEL SPEC
     print("Setting up OpenAI model...")
-    load_dotenv() # load env vars
+    load_dotenv()
     model = OpenAIModel(
         client_args={
             "api_key": os.environ.get("OPENAI_API_KEY"),
         },
-        # **model_config
         model_id="gpt-4.1-nano",
         params={
             "max_tokens": 5000,
@@ -28,8 +24,6 @@ def main():
 
     try:
         with mcp_server:
-            
-            # Create agent
             agent = Agent(
                 model=model,
                 # System prompt used to test individual tools
@@ -96,7 +90,6 @@ def main():
                 # - Assembling the final comic output (e.g. PDF, web format)
                 )
             
-            # List tools available on the MCP server
             mcp_tools = mcp_server.list_tools_sync()
             print(f"Available tools: {[tool.tool_name for tool in mcp_tools]}")
             
