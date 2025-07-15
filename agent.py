@@ -2,12 +2,17 @@ import os
 from strands import Agent
 from strands.models.openai import OpenAIModel
 from strands.tools.mcp import MCPClient
-from mcp.client.streamable_http import streamablehttp_client
+from mcp.client.stdio import stdio_client, StdioServerParameters
 from dotenv import load_dotenv
 
 def main():
     print("Connecting to server...")
-    mcp_server = MCPClient(lambda: streamablehttp_client("http://127.0.0.1:8000/mcp"))
+    mcp_client = MCPClient(lambda: stdio_client(StdioServerParameters(
+        # command="uv",
+        # args=["run", "mcp", "dev", "mcpserver.py"]
+        command="python",
+        args=["mcpserver.py"]
+    )))
 
     print("Setting up OpenAI model...")
     load_dotenv()
@@ -23,26 +28,18 @@ def main():
     )
 
     try:
-        with mcp_server:
+        with mcp_client:
             agent = Agent(
                 model=model,
                 # System prompt used to test individual tools
                 system_prompt="""
-                You are an autonomous agent that uses external tools to help generate children's comics based on one user prompt.
-
                 When the user gives a prompt, you must:
                 1. Feed the prompt into storyboarder.
-                2. Return the raw result of step 1.
-
-                Rules:
-                - Always use, and only use the available python tools provided by the MCP server
-                - Never ask the user to continue or confirm anything
-                - Never stop after planning — always complete the task
-                - Do not make up answers or skip steps
-                - If a task cannot be completed with the available tools, respond with: "That is outside of my capabilities."
+                2. Format the result of step 1.
+                3. Return ALL raw result of step 2.
                 """
                 
-                # REAL SYS INSTRUCTIONS LEFT COMMENTED BELOW TO TESTING INDIVIDUAL TOOLS
+                # SYS INSTRUCTIONS LEFT COMMENTED BELOW TO TESTING INDIVIDUAL TOOLS
                 
                 # system_prompt="""
                 # You are an autonomous agent that generates children's comics based on one user prompt.
@@ -90,7 +87,7 @@ def main():
                 # - Assembling the final comic output (e.g. PDF, web format)
                 )
             
-            mcp_tools = mcp_server.list_tools_sync()
+            mcp_tools = mcp_client.list_tools_sync()
             print(f"Available tools: {[tool.tool_name for tool in mcp_tools]}")
             
             agent.tool_registry.process_tools(mcp_tools)

@@ -60,6 +60,7 @@ def storyboarder(prompt: str) -> dict:
 
 @mcp.tool()
 def image_gen(characters: list, bg_scenes: list) -> dict:
+    """Unimplemented image gen tool stub"""
     pass
 
-mcp.run(transport="streamable-http")
+mcp.run(transport="stdio")
