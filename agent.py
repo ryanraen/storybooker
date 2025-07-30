@@ -37,6 +37,10 @@ def main():
                 1. Feed the prompt into storyboarder.
                 2. Format the result of step 1.
                 3. Return ALL raw result of step 2.
+                
+                After COMPLETELY finishing steps 1-3:
+                1. Generate all required base character images and base background images for the story.
+                2. Generate all altered character and background images to fit the context in each page.
                 """
                 
                 # SYS INSTRUCTIONS LEFT COMMENTED BELOW TO TESTING INDIVIDUAL TOOLS
