@@ -28,7 +28,7 @@ openai_client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 gcloud_client = genai.Client(http_options=HttpOptions(api_version="v1"),
                       vertexai=os.environ.get("GOOGLE_GENAI_USE_VERTEXAI"),
                       project=os.environ.get("GOOGLE_CLOUD_PROJECT"),
-                      location=os.environ.get("GOOGLE_CLOUD_LOCATION"))
+                      location=os.environ.get("GOOGLE_CLOUD_LOCATION")) # tweak temperature
 
 mcp = FastMCP(name="MCP Server",
               stateless_http=False)
@@ -93,7 +93,7 @@ def character_base_image_gen(name: str, description: str) -> str:
         model="gemini-2.5-flash",
         contents=[
             f"""
-            Return a specific set of defining physical traits for a character with:
+            Return a specific set of defining physical traits for a children's cartoon character with:
             name: "{name}",
             additional description: "{description}"
             
@@ -119,7 +119,8 @@ def character_base_image_gen(name: str, description: str) -> str:
         ],
     ).text
     base_img = gcloud_client.models.generate_images(
-        model="imagen-3.0-generate-002",
+        # model="imagen-3.0-generate-002",
+        model="imagen-3.0-fast-generate-001",
         prompt=traits
     )
     base_img.generated_images[0].image.save(out_dir + name.replace(" ", "_") + ".png")
@@ -141,16 +142,17 @@ def background_scene_image_gen(scene: int, description: str) -> str:
         model="gemini-2.5-flash",
         contents=[
             f"""
-            Return a specific set of defining physical traits for a background scene with:
+            Return a specific set of defining physical traits for a children's cartoon background scene with:
             description: "{description}"
             """,
         ],
     ).text
     base_img = gcloud_client.models.generate_images(
-        model="imagen-3.0-generate-002",
+        # model="imagen-3.0-generate-002",
+        model="imagen-3.0-fast-generate-001",
         prompt=traits
     )
-    base_img.generated_images[0].image.save(out_dir + "bg_" + scene + ".png")
+    base_img.generated_images[0].image.save(out_dir + "bg_" + str(scene) + ".png")
     return traits
 
 @mcp.tool()
@@ -184,11 +186,12 @@ def altered_character_image_gen(name: str, scene: int, traits: str, desired_trai
     print(f"\n\nChanged traits: {changed_traits}")
 
     pose_control_img = gcloud_client.models.generate_images(
-        model="imagen-3.0-generate-002",
+        # model="imagen-3.0-generate-002",
+        model="imagen-3.0-fast-generate-001",
         prompt=changed_traits
     )
 
-    pose_control_img.generated_images[0].image.save(out_dir + name.replace(" ", "_") + "_" + scene + ".png")
+    pose_control_img.generated_images[0].image.save(out_dir + name.replace(" ", "_") + "_" + str(scene) + ".png")
 
 
 mcp.run(transport="stdio")
