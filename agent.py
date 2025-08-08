@@ -8,8 +8,6 @@ from dotenv import load_dotenv
 def main():
     print("Connecting to server...")
     mcp_client = MCPClient(lambda: stdio_client(StdioServerParameters(
-        # command="uv",
-        # args=["run", "mcp", "dev", "mcpserver.py"]
         command="python",
         args=["mcpserver.py"]
     )))
@@ -33,14 +31,12 @@ def main():
                 model=model,
                 # System prompt used to test individual tools
                 system_prompt="""
-                When the user gives a prompt, you must:
+                When the user gives a prompt, you must do ALL of the following:
                 1. Feed the prompt into storyboarder.
-                2. Format the result of step 1.
-                3. Return ALL raw result of step 2.
-                
-                After COMPLETELY finishing steps 1-3:
-                1. Generate all required base character images and base background images for the story.
-                2. Generate all altered character and background images to fit the context in each page.
+                2. Format and return the result of step 1.
+                3. Based on the storyboard, determine all character and background images that need to be generated for each page.
+                4. Generate ALL required base character images and base background images for the story.
+                5. Generate ALL altered character and background images to fit the context in each page.
                 """
                 
                 # SYS INSTRUCTIONS LEFT COMMENTED BELOW TO TESTING INDIVIDUAL TOOLS
