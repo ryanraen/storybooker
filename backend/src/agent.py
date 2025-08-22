@@ -9,7 +9,7 @@ def main():
     print("Connecting to server...")
     mcp_client = MCPClient(lambda: stdio_client(StdioServerParameters(
         command="python",
-        args=["mcpserver.py"]
+        args=["backend/src/mcpserver.py"]
     )))
 
     print("Setting up OpenAI model...")
@@ -64,7 +64,7 @@ def main():
                         - Call character_base_image_gen with:
                             - name (all lowercase, spaces replaced with underscores)
                             - description (physical traits)
-                        - Save generated base images in ./res/base/{name}.png.
+                        - Save generated base images in backend/res/base/{name}.png.
                 4. Generate Scenes
                     - For each storyboard page (1–6):
                         - Construct a requirements string combining the background, narration context, and character placements.
@@ -72,7 +72,7 @@ def main():
                             - requirements (scene description with characters, background, narration guidance)
                             - scene_index (page number 1–6)
                             - images (list of character base image filenames).
-                        - Store final scene image in ./res/scene/scene_{scene_index}.png.
+                        - Store final scene image in backend/res/scene/scene_{scene_index}.png.
                     - Track internally (in memory) which scene indices (1–6) have been sent to scene_creator.
                     - Track which scene indices the tool successfully responded to.
                     - If any are missing, retry those specific indices until all 6 are completed.
@@ -81,7 +81,7 @@ def main():
                         - Call narration_writer with:
                             - scene_index (page number)
                             - narration (text from the storyboard for that page)
-                        - Store the final scene with narration in ./res/final/scene_{scene_index}.png.
+                        - Store the final scene with narration in backend/res/pages/scene_{scene_index}.png.
 
                 # Constraints
                 1. Always generate exactly 6 pages. Do not output fewer or more.

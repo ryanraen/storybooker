@@ -8,6 +8,7 @@ from google import genai
 from google.genai.types import (
     HttpOptions,
 )
+from PIL import Image
 import base64
 import cv2
 import textwrap
@@ -75,9 +76,9 @@ def character_base_image_gen(name: str, description: str) -> str:
     Purpose: Given physical descriptions of a character, generates a base image for it
     Input: name is the name of the character in all lower case (eg. peppa pig); 
            description is the additional specified physical traits of the character being generated (eg. "pig, red shirt, happy, green shoes").
-    Output: the generated image is stored in "./res/base/" as "{name}.png" where any spaces in name are replaced with underscores.
+    Output: the generated image is stored in "backend/res/base/" as "{name}.png" where any spaces in name are replaced with underscores.
     """
-    out_dir = "res/base/"
+    out_dir = "backend/res/base/"
     
     traits = gcloud_client.models.generate_content(
         model="gemini-2.5-flash",
@@ -129,11 +130,11 @@ def scene_creator(scene_index: int, requirements: str, images: list) -> str:
            scene_index is the page number of the scene being generated
            images is a list of the file names of the characters appearing in the scene,
            eg. ["peppa_pig.png", "george.png", ...]
-    Output: Generated scene image is stored as "scene_{scene_index}.png" in "./res/scene/"
+    Output: Generated scene image is stored as "scene_{scene_index}.png" in "backend/res/scene/"
     """
-    out_dir = "res/scene/"
+    out_dir = "backend/res/scene/"
     
-    base64_images = [encode_image("res/base/" + path) for path in images]
+    base64_images = [encode_image("backend/res/base/" + path) for path in images]
         
     request_content = [
         {"type": "input_text", "text": requirements},
@@ -171,10 +172,10 @@ def narration_writer(scene_index: int, narration: str) -> str:
     Purpose: Given the page number and narration of the scene, overlays the narration text on the scene image
     Input: scene_index is the page number of the scene being modified
            narration is the narration text that should be added to the scene
-    Output: Modified scene image is stored as "scene_{scene_index}.png" in "./res/final/"
+    Output: Modified scene image is stored as "scene_{scene_index}.png" in "backend/res/pages/"
     """
-    in_dir = "res/scene/"
-    out_dir = "res/final/"
+    in_dir = "backend/res/scene/"
+    out_dir = "backend/res/pages/"
 
     image = cv2.imread(in_dir + f"scene_{scene_index}.png")
     img_height, img_width, img_channels = image.shape
@@ -217,5 +218,19 @@ def narration_writer(scene_index: int, narration: str) -> str:
                     lineType = cv2.LINE_AA)
 
     cv2.imwrite(out_dir + f"scene_{scene_index}.png", image)
-
+    
+@mcp.tool()
+def pdf_compiler(title: str) -> str:
+    """
+    Purpose: Combines the 6 final narrated scene images into a single PDF storybook.
+    Input: title is a short and brief title for the final completed storybook
+    Output: The completed storybook PDF is stored as "./res/final/{title in all lowercase with all " " replaced with "_"}.pdf".
+    """
+    out_dir = "backend/res/final/"
+    out_filename = title.lower().replace(" ", "_")
+    pages = [Image.open(f"backend/res/pages/scene_{index}.png") for index in range(1, 7)]
+    pages[0].save(
+        out_dir + out_filename + ".pdf", "PDF" ,resolution=100.0, save_all=True, append_images=pages[1:]
+    )
+    
 mcp.run(transport="stdio")
