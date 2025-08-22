@@ -5,7 +5,7 @@ from strands.tools.mcp import MCPClient
 from mcp.client.stdio import stdio_client, StdioServerParameters
 from dotenv import load_dotenv
 
-def main():
+def run(user_input: str) -> None:
     print("Connecting to server...")
     mcp_client = MCPClient(lambda: stdio_client(StdioServerParameters(
         command="python",
@@ -98,16 +98,18 @@ def main():
             
             agent.tool_registry.process_tools(mcp_tools)
                         
-            while True:
-                user_input = input("\nPlease enter a comic story idea.\n")
+            # while True:
+            #     user_input = input("\nPlease enter a comic story idea.\n")
                 
-                if user_input.lower() in ["exit", "quit", "bye", "stop"]:
-                        print("See you next time!")
-                        break
+            #     if user_input.lower() in ["exit", "quit", "bye", "stop"]:
+            #             print("See you next time!")
+            #             break
                     
-                print("Processing request...")
+            #     print("Processing request...")
                 
-                result = agent(user_input)
+            #     result = agent(user_input)
+            
+            result = agent(user_input)
                 
     except Exception as e:
             print("SERVER CONNECTION FAILED: " + str(e.with_traceback(None)))
