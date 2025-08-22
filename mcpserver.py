@@ -10,6 +10,7 @@ from google.genai.types import (
 )
 import base64
 import cv2
+import textwrap
 
 # CONSTANTS
 OPENAI_MODEL_ID = "gpt-4.1-nano"
@@ -42,7 +43,6 @@ def storyboarder(prompt: str) -> dict:
           ...
         ]
     """
-    
     response = openai_client.responses.create(
         model=OPENAI_MODEL_ID,
         instructions="""
@@ -78,7 +78,6 @@ def character_base_image_gen(name: str, description: str) -> str:
            description is the additional specified physical traits of the character being generated (eg. "pig, red shirt, happy, green shoes").
     Output: the generated image is stored in "./res/base/" as "{name}.png" where any spaces in name are replaced with underscores.
     """
-    
     out_dir = "res/base/"
     
     traits = gcloud_client.models.generate_content(
@@ -134,11 +133,7 @@ def scene_creator(scene_index: int, requirements: str, images: list) -> str:
            eg. ["peppa_pig.png", "george.png", ...]
     Output: Generated scene image is stored as "scene_{scene_index}.png" in "./res/scene/"
     """
-    
     out_dir = "res/scene/"
-    
-    print(f"Scene {scene_index}: " + str(i) + " " for i in images)
-
     
     base64_images = [encode_image("res/base/" + path) for path in images]
         
@@ -157,7 +152,7 @@ def scene_creator(scene_index: int, requirements: str, images: list) -> str:
                 "content": request_content,
             }
         ],
-        tools=[{"type": "image_generation", "quality": "low", "size": PAGE_SIZE}], # change quality !!!
+        tools=[{"type": "image_generation", "quality": "high", "size": PAGE_SIZE}], # change quality !!!
     )
     
     image_data = [
@@ -178,8 +173,51 @@ def narration_writer(scene_index: int, narration: str) -> str:
     Purpose: Given the page number and narration of the scene, overlays the narration text on the scene image
     Input: scene_index is the page number of the scene being modified
            narration is the narration text that should be added to the scene
-    Output: Modified scene image replaces original image as "scene_{scene_index}.png" in "./res/scene/"
+    Output: Modified scene image is stored as "scene_{scene_index}.png" in "./res/final/"
     """
-    
+    in_dir = "res/scene/"
+    out_dir = "res/final/"
+
+    image = cv2.imread(in_dir + f"scene_{scene_index}.png")
+    img_height, img_width, img_channels = image.shape
+    wrapped_text = textwrap.wrap(text=narration, width=50)
+
+    font = cv2.FONT_HERSHEY_COMPLEX
+
+    font_size = 1
+
+    outline_color = (0, 0, 0)
+    font_color = (255, 255, 255)
+
+    font_thickness = 2
+    outline_thickness = 6
+
+    for i, line in enumerate(wrapped_text):
+        textsize = cv2.getTextSize(line, font, font_size, font_thickness)[0]
+
+        text_width = textsize[0]
+        text_height = textsize[1]
+
+        gap = text_height + 10
+        starting_y = int(img_height - gap - len(wrapped_text)*gap)
+
+        y = starting_y + i * gap
+        x = int((img_width - text_width) / 2)
+        
+        # outline
+        cv2.putText(image, line, (x, y), font,
+                    font_size, 
+                    outline_color, 
+                    outline_thickness, 
+                    lineType = cv2.LINE_AA)
+        
+        # text
+        cv2.putText(image, line, (x, y), font,
+                    font_size, 
+                    font_color, 
+                    font_thickness, 
+                    lineType = cv2.LINE_AA)
+
+    cv2.imwrite(out_dir + f"scene_{scene_index}.png", image)
 
 mcp.run(transport="stdio")
