@@ -11,5 +11,6 @@ dependencies = [
     "mcp[cli]>=1.11.0",
     "openai>=1.95.1",
     "opencv-python>=4.12.0.88",
+    "pillow>=11.3.0",
     "strands-agents>=0.3.0",
 ]

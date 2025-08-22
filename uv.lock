@@ -178,6 +178,7 @@ dependencies = [
     { name = "mcp", extra = ["cli"] },
     { name = "openai" },
     { name = "opencv-python" },
+    { name = "pillow" },
     { name = "strands-agents" },
 ]
 
@@ -189,6 +190,7 @@ requires-dist = [
     { name = "mcp", extras = ["cli"], specifier = ">=1.11.0" },
     { name = "openai", specifier = ">=1.95.1" },
     { name = "opencv-python", specifier = ">=4.12.0.88" },
+    { name = "pillow", specifier = ">=11.3.0" },
     { name = "strands-agents", specifier = ">=0.3.0" },
 ]
 
