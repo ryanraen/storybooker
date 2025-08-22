@@ -6,22 +6,15 @@ import json
 from PIL import Image as PImg
 from google import genai
 from google.genai.types import (
-    RawReferenceImage, 
-    MaskReferenceImage, 
-    MaskReferenceConfig, 
-    EditImageConfig, 
-    GenerateImagesConfig,
-    Image,
-    Part,
     HttpOptions,
-    ControlReferenceConfig,
-    ControlReferenceImage,
-    SubjectReferenceConfig,
-    SubjectReferenceImage
 )
+import base64
+import cv2
 
 # CONSTANTS
-AI_MODEL_ID = "gpt-4.1-nano"
+OPENAI_MODEL_ID = "gpt-4.1-nano"
+PAGE_SIZE = "1024x1024"
+# OPENAI_IMAGE_GEN_MODEL_ID = "gpt-4.1"
 
 load_dotenv()
 openai_client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
@@ -51,7 +44,7 @@ def storyboarder(prompt: str) -> dict:
     """
     
     response = openai_client.responses.create(
-        model=AI_MODEL_ID,
+        model=OPENAI_MODEL_ID,
         instructions="""
         You are a children's storyteller who structures story books in 6 pages.
         Based on the user prompted story idea, create a structured 6-page storyboard.
@@ -80,11 +73,10 @@ def storyboarder(prompt: str) -> dict:
 @mcp.tool()
 def character_base_image_gen(name: str, description: str) -> str:
     """
-    Purpose: Given the physical description of a character, generates a base image for it
+    Purpose: Given physical descriptions of a character, generates a base image for it
     Input: name is the name of the character in all lower case (eg. peppa pig); 
            description is the additional specified physical traits of the character being generated (eg. "pig, red shirt, happy, green shoes").
-    Output: returns a string of specific set of defining physical traits for the character generated based on the given arguments,
-            and the generated image is stored in "./res/base/" as "{name}.png" where any spaces in name are replaced with underscores.
+    Output: the generated image is stored in "./res/base/" as "{name}.png" where any spaces in name are replaced with underscores.
     """
     
     out_dir = "res/base/"
@@ -121,77 +113,73 @@ def character_base_image_gen(name: str, description: str) -> str:
     base_img = gcloud_client.models.generate_images(
         # model="imagen-3.0-generate-002",
         model="imagen-3.0-fast-generate-001",
-        prompt=traits
+        prompt="Style: children's cartoon book\n" + traits
     )
     base_img.generated_images[0].image.save(out_dir + name.replace(" ", "_") + ".png")
-    return traits
+    
+    return "Tool executed successfully."
+
+def encode_image(image_path):
+    with open(image_path, "rb") as image_file:
+        return base64.b64encode(image_file.read()).decode("utf-8")
 
 @mcp.tool()
-def background_scene_image_gen(scene: int, description: str) -> str:
+def scene_creator(scene_index: int, requirements: str, images: list) -> str:
     """
-    Purpose: Given the scene index and physical description of a background scene, generates a base image for it
-    Input: scene is the page index number that the resulting background image belongs to;
-           description is the physical traits of the background being generated (eg. "grass field, sunny, clouds, sparse trees, house in the distance").
-    Output: returns a string of specific set of defining physical traits for the background tree generated based on the given arguments,
-            and the generated image is stored in "./res/base/" as "bg_{scene}.png".
+    Purpose: Given requirements for a scene in the story book, generates one image for it.
+    Input: requirements is the text requirement prompt for generating the scene image, 
+           eg. "background is a grass field with some trees; character in pose.png is standing on the left side, looking right, happy, pointing right; character in pose3.png is standing on the right, looking left, sad, jumping."
+           scene_index is the page number of the scene being generated
+           images is a list of the file names of the characters appearing in the scene,
+           eg. ["peppa_pig.png", "george.png", ...]
+    Output: Generated scene image is stored as "scene_{scene_index}.png" in "./res/scene/"
     """
     
-    out_dir = "res/base/"
+    out_dir = "res/scene/"
     
-    traits = gcloud_client.models.generate_content(
-        model="gemini-2.5-flash",
-        contents=[
-            f"""
-            Return a specific set of defining physical traits for a children's cartoon background scene with:
-            description: "{description}"
-            """,
+    print(f"Scene {scene_index}: " + str(i) + " " for i in images)
+
+    
+    base64_images = [encode_image("res/base/" + path) for path in images]
+        
+    request_content = [
+        {"type": "input_text", "text": requirements},
+        ]
+    for b64_entry in base64_images:
+        request_content.append({"type": "input_image",
+                                "image_url": f"data:image/jpeg;base64,{b64_entry}",})
+    
+    response = openai_client.responses.create(
+        model=OPENAI_MODEL_ID,
+        input=[
+            {
+                "role": "user",
+                "content": request_content,
+            }
         ],
-    ).text
-    base_img = gcloud_client.models.generate_images(
-        # model="imagen-3.0-generate-002",
-        model="imagen-3.0-fast-generate-001",
-        prompt=traits
+        tools=[{"type": "image_generation", "quality": "low", "size": PAGE_SIZE}], # change quality !!!
     )
-    base_img.generated_images[0].image.save(out_dir + "bg_" + str(scene) + ".png")
-    return traits
+    
+    image_data = [
+        output.result for output in response.output
+        if output.type == "image_generation_call"
+    ]
 
-@mcp.tool()
-def altered_character_image_gen(name: str, scene: int, traits: str, desired_traits: str) -> None:
-    """
-    Purpose: Given the name, specific predefined traits, and belonging scene of a character, and the desired traits, generates a new image that alters the base character image to have the desired traits such that the character fits the story/scene.
-    Input: name is the name of the character in all lowercase (eg. "peppa pig");
-           scene is the page index number that the resulting character image belongs to;
-           traits is the specific set of defining physical traits for the given character previously returned by character_base_image_gen;
-           desired_traits is the physical traits such as expression, facing direction, pose, emotions that the new altered character image should have (eg. "facing right of screen, hands extending upwards, expression happy")
-    Output: the generated altered image is stored in "./res/altered/" as "{name}_{scene}.png" where any spaces in name are replaced with underscores.
-    """
-    
-    out_dir = "res/altered/"
-    
-    changed_traits = gcloud_client.models.generate_content(
-        model="gemini-2.5-flash",
-        contents=[
-            f"""
-            Change and return the following characteristics description such that the character is "{desired_traits}":
-            {traits}
+    if image_data:
+        image_base64 = image_data[0]
+        with open(f"{out_dir}scene_{scene_index}.png", "wb") as f:
+            f.write(base64.b64decode(image_base64))
             
-            Rules:
-            -Make as little alterations as possible to achieve ALL the desired changes
-            -Emphasize the direction of the character in the description
-            -Return just the new characteristics description string
-            """
-        ],
-    ).text
+    return "Tool executed successfully."
 
-    print(f"\n\nChanged traits: {changed_traits}")
-
-    pose_control_img = gcloud_client.models.generate_images(
-        # model="imagen-3.0-generate-002",
-        model="imagen-3.0-fast-generate-001",
-        prompt=changed_traits
-    )
-
-    pose_control_img.generated_images[0].image.save(out_dir + name.replace(" ", "_") + "_" + str(scene) + ".png")
-
+@mcp.tool()
+def narration_writer(scene_index: int, narration: str) -> str:
+    """
+    Purpose: Given the page number and narration of the scene, overlays the narration text on the scene image
+    Input: scene_index is the page number of the scene being modified
+           narration is the narration text that should be added to the scene
+    Output: Modified scene image replaces original image as "scene_{scene_index}.png" in "./res/scene/"
+    """
+    
 
 mcp.run(transport="stdio")
