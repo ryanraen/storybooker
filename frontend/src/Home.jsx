@@ -66,22 +66,6 @@ export default function LandingPage() {
         </Box>
       </Container>
 
-        {/* Examples */}
-        <Container maxWidth="lg" sx={{ py: 10 }} id="examples">
-        <Typography variant="h4" fontWeight="bold" textAlign="center" mb={5}>Examples</Typography>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 3, flexWrap: 'nowrap' }}>
-          {features.map((f, i) => (
-            <Card key={i} sx={{ flex: '1 1 0', textAlign: 'center', p: 3, borderRadius: 3, boxShadow: 3 }}>
-              <CardContent>
-                {f.icon}
-                <Typography variant="h6" fontWeight="bold" mt={2}>{f.title}</Typography>
-                <Typography color="text.secondary" mt={1}>{f.desc}</Typography>
-              </CardContent>
-            </Card>
-          ))}
-        </Box>
-      </Container>
-
       {/* How it works */}
       <Container maxWidth="md" sx={{ py: 10 }} id="how-it-works">
         <Typography variant="h4" fontWeight="bold" textAlign="center" mb={5}>How It Works</Typography>
