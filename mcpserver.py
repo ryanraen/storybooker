@@ -12,17 +12,16 @@ import base64
 import cv2
 import textwrap
 
-# CONSTANTS
-OPENAI_MODEL_ID = "gpt-4.1-nano"
+OPENAI_MODEL_ID = "gpt-4.1-nano" # "gpt-4.1"
+IMAGEN_MODEL_ID = "imagen-3.0-fast-generate-001" # "imagen-3.0-generate-002"
 PAGE_SIZE = "1024x1024"
-# OPENAI_IMAGE_GEN_MODEL_ID = "gpt-4.1"
 
 load_dotenv()
 openai_client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 gcloud_client = genai.Client(http_options=HttpOptions(api_version="v1"),
                       vertexai=os.environ.get("GOOGLE_GENAI_USE_VERTEXAI"),
                       project=os.environ.get("GOOGLE_CLOUD_PROJECT"),
-                      location=os.environ.get("GOOGLE_CLOUD_LOCATION")) # tweak temperature
+                      location=os.environ.get("GOOGLE_CLOUD_LOCATION"))
 
 mcp = FastMCP(name="MCP Server",
               stateless_http=False)
@@ -110,8 +109,7 @@ def character_base_image_gen(name: str, description: str) -> str:
         ],
     ).text
     base_img = gcloud_client.models.generate_images(
-        # model="imagen-3.0-generate-002",
-        model="imagen-3.0-fast-generate-001",
+        model=IMAGEN_MODEL_ID,
         prompt="Style: children's cartoon book\n" + traits
     )
     base_img.generated_images[0].image.save(out_dir + name.replace(" ", "_") + ".png")
@@ -152,7 +150,7 @@ def scene_creator(scene_index: int, requirements: str, images: list) -> str:
                 "content": request_content,
             }
         ],
-        tools=[{"type": "image_generation", "quality": "high", "size": PAGE_SIZE}], # change quality !!!
+        tools=[{"type": "image_generation", "quality": "high", "size": PAGE_SIZE}],
     )
     
     image_data = [
