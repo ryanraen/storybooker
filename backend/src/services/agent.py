@@ -9,7 +9,7 @@ def run(user_input: str) -> None:
     print("Connecting to server...")
     mcp_client = MCPClient(lambda: stdio_client(StdioServerParameters(
         command="python",
-        args=["backend/src/mcpserver.py"]
+        args=["backend/src/services/mcpserver.py"]
     )))
 
     print("Setting up OpenAI model...")
