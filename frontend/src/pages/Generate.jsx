@@ -21,7 +21,7 @@ export default function Generate() {
       <Stack spacing={3} mt={3}>
         <TextField
           label="Story Idea"
-          placeholder="e.g. A white bunny learns the importance of honesty"
+          placeholder="e.g. A dragon learns about honesty"
           fullWidth
           variant="outlined"
         />
