@@ -5,6 +5,7 @@ description = "An LLM-based agent for generating children's comics with minimal 
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
+    "dotenv>=0.9.9",
     "flask>=3.1.2",
     "gcloud[cli]>=0.18.3",
     "google-genai>=1.27.0",
@@ -14,4 +15,5 @@ dependencies = [
     "opencv-python>=4.12.0.88",
     "pillow>=11.3.0",
     "strands-agents>=0.3.0",
+    "supabase>=2.18.1",
 ]
