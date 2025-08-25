@@ -1,14 +1,14 @@
 # Storybooker
 
-**Storybooker** is an autonomous AI agent that generates fully illustrated children’s comic books from a single prompt. Each storybook is unique, featuring engaging narratives and visually rich scenes, created entirely by AI.  
+**Storybooker** is an autonomous AI agent that generates fully illustrated children’s comic books from a single prompt. Powered by OpenAI GPT, Google Cloud Imagen, and orchestrated using **Strands Agents** with **Model Context Protocol (MCP)**, Storybooker creates unique stories and visuals without user intervention.  
 
 *From idea to storybook — completely AI-driven.*
 
-Experience it live at: [https://storybooker.vercel.app](https://storybooker.vercel.app)
+🌐 **Try it live:** [https://storybooker.vercel.app](https://storybooker.vercel.app)
 
 ---
 
-## Features
+## Key Features
 
 - **Autonomous Comic Generation:** The AI agent handles story, dialogue, and illustrations from a single prompt.  
 - **Infinite Creativity:** Each prompt produces unique story variations.  
