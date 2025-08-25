@@ -1,4 +1,12 @@
-# Storybooker
+<br />
+<div align="center">
+  <a href="https://https://github.com/ryanraen/storybooker">
+    <img src="frontend/public/storybooker-icon.png" alt="Logo" width="80" height="80">
+  </a>
+  <h1 align="center">Storybooker</h1>
+</div>
+
+## About the Project
 
 **Storybooker** is an autonomous AI agent that generates fully illustrated children’s comic books from a single prompt. Powered by OpenAI GPT, Google Cloud Imagen, and orchestrated using **Strands Agents** with **Model Context Protocol (MCP)**, Storybooker creates unique stories and visuals without user intervention.  
 
