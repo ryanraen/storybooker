@@ -35,12 +35,20 @@
 
 ## Tech Stack
 
-- **Frontend:** React, Material-UI (MUI)  
-- **Backend:** Flask  
-- **AI:** OpenAI GPT, Google Cloud Imagen  
-- **Agent Framework:** Strands Agents with MCP  
-- **Database & Auth:** Supabase (PostgreSQL, Auth)  
-- **Hosting:** Vercel  
+![React](https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=black)
+![Material-UI](https://img.shields.io/badge/Material--UI-0081CB?style=for-the-badge&logo=mui&logoColor=white)
+![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)
+
+![Flask](https://img.shields.io/badge/Flask-000000?style=for-the-badge&logo=flask&logoColor=white)
+![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)
+
+![OpenAI](https://img.shields.io/badge/OpenAI-412991?style=for-the-badge&logo=openai&logoColor=white)
+![Google Cloud](https://img.shields.io/badge/Google%20Cloud-4285F4?style=for-the-badge&logo=googlecloud&logoColor=white)
+![Strands Agents](https://img.shields.io/badge/Strands%20Agents-FF6F61?style=for-the-badge&logo=strands-agents&logoColor=white)
+![Model Context Protocol (MCP)](https://img.shields.io/badge/MCP-6C63FF?style=for-the-badge&logo=modelcontextprotocol&logoColor=white)
+
+
+
 
 ---
 
