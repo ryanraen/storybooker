@@ -1,10 +1,4 @@
-<br />
-<div align="center">
-  <a href="https://https://github.com/ryanraen/storybooker">
-    <img src="frontend/public/storybooker-icon.png" alt="Logo" width="80" height="80">
-  </a>
-  <h1 align="center">Storybooker</h1>
-</div>
+![Storybooker](frontend/public/readme_header.png)
 
 ## About the Project
 
