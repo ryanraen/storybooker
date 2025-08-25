@@ -46,7 +46,7 @@
 
 [![OpenAI](https://img.shields.io/badge/OpenAI-412991?style=for-the-badge&logo=openai&logoColor=white)](https://openai.com/)
 [![Google Cloud](https://img.shields.io/badge/Google%20Cloud-4285F4?style=for-the-badge&logo=googlecloud&logoColor=white)](https://cloud.google.com/)
-[![Strands Agents](https://img.shields.io/badge/Strands%20Agents-FF6F61?style=for-the-badge&logo=strands-agents&logoColor=white)](https://strandsagents.com/)
+[![Strands Agents](https://img.shields.io/badge/Strands%20Agents-88FC8C?style=for-the-badge&logo=strands-agents&logoColor=white)](https://strandsagents.com/)
 [![Model Context Protocol (MCP)](https://img.shields.io/badge/MCP-6C63FF?style=for-the-badge&logo=modelcontextprotocol&logoColor=white)](https://modelcontextprotocol.io/)
 
 
