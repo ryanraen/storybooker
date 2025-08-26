@@ -106,7 +106,21 @@ def logout():
     except Exception as e:
         return jsonify({"error": str(e)}), 400
     
-  
+# Helpers
+def get_current_user():
+    auth_header = request.headers.get("Authorization")
+    if not auth_header or not auth_header.startswith("Bearer "):
+        return None, (jsonify({"error": "Missing or invalid authorization token"}), 401)
+    
+    token = auth_header.split(" ")[1]  # "Bearer <jwt token>"
+    try:
+        user = supabase.auth.get_user(token).user
+        if not user:
+            return None, (jsonify({"error": "Invalid or expired authorization token"}), 401)
+        
+        return user, None
+    except Exception as e:
+        return None, (jsonify({"error": str(e)}), 401)
     
 # Agent
 @app.route("/generate", methods = ["POST"])
