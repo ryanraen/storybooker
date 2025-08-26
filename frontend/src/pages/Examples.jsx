@@ -4,25 +4,30 @@ import { Box, Typography, Grid, Card, CardMedia, CardContent, Button } from "@mu
 const examples = [
     // placeholders
     {
-        title: "The Honest Dragon",
-        description: "A dragon who learns the value of honesty through magical adventures.",
-        image: "/examples/honest-dragon.png",
+        title: "The Brave Bunny",
+        description: "A little bunny who overcomes fears and discovers bravery on her first day of school.",
+        image: "/public/storybook-preview.png",
     },
-    {
-        title: "Luna’s Space Journey",
-        description: "Follow Luna as she travels across the stars to make new friends.",
-        image: "/examples/luna-space.png",
-    },
-    {
-        title: "The Brave Little Fox",
-        description: "A story about courage, kindness, and helping others in the forest.",
-        image: "/examples/brave-fox.png",
-    },
-    {
-        title: "The Lost Pirate Treasure",
-        description: "Pirates and children team up to discover the true treasure: friendship.",
-        image: "/examples/pirate-treasure.png",
-    },
+    // {
+    //     title: "The Honest Dragon",
+    //     description: "A dragon who learns the value of honesty through magical adventures.",
+    //     image: "/examples/honest-dragon.png",
+    // },
+    // {
+    //     title: "Luna’s Space Journey",
+    //     description: "Follow Luna as she travels across the stars to make new friends.",
+    //     image: "/examples/luna-space.png",
+    // },
+    // {
+    //     title: "The Brave Little Fox",
+    //     description: "A story about courage, kindness, and helping others in the forest.",
+    //     image: "/examples/brave-fox.png",
+    // },
+    // {
+    //     title: "The Lost Pirate Treasure",
+    //     description: "Pirates and children team up to discover the true treasure: friendship.",
+    //     image: "/examples/pirate-treasure.png",
+    // },
 ];
 
 export default function SeeExamples() {
@@ -53,7 +58,7 @@ export default function SeeExamples() {
                                 component="img"
                                 image={example.image}
                                 alt={example.title}
-                                sx={{ borderTopLeftRadius: "20px", borderTopRightRadius: "20px", height: 220, }}
+                                sx={{ borderTopLeftRadius: "20px", borderTopRightRadius: "20px", height: 420, }}
                             />
                             <CardContent sx={{ flexGrow: 1 }}>
                                 <Typography variant="h6" fontWeight="bold">
