@@ -6,7 +6,7 @@ const examples = [
     {
         title: "The Brave Bunny",
         description: "A little bunny who overcomes fears and discovers bravery on her first day of school.",
-        image: "/public/storybook-preview.png",
+        image: "/storybook-preview.png",
     },
     // {
     //     title: "The Honest Dragon",
