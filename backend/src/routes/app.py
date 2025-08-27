@@ -76,6 +76,11 @@ def reset_password():
     data = request.json
     email = data.get("email")
     redirect_to = data.get("redirect_to") # password reset page
+    user, error = get_current_user()
+    if error:
+        return error
+    if user.email != email:
+        return jsonify({"error": "Email does not match the logged-in user"}), 403
     try:
         supabase.auth.reset_password_email(
             email,
@@ -89,6 +94,14 @@ def reset_password():
 def update_password():
     data = request.json
     new_password = data.get("new_password")
+    access_token = request.args.get("access_token")
+    refresh_token = request.args.get("refresh_token")
+    temp_session_response = supabase.auth.set_session({
+        "access_token": access_token,
+        "refresh_token": refresh_token
+    })
+    if not temp_session_response.user:
+        return jsonify({"error": "Invalid or expired session tokens"}), 401
     try:
         auth_response = supabase.auth.update_user({"password": new_password})
         if not auth_response.user:
@@ -100,6 +113,9 @@ def update_password():
         
 @app.route("/user/logout", methods = ["POST"])
 def logout():
+    user, error = get_current_user()
+    if error:
+        return error
     try:
         supabase.auth.sign_out()
         return jsonify({"message": "User logged out"}), 200
