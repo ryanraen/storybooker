@@ -1,4 +1,3 @@
-import React from "react";
 import { Box, Typography, Grid, Card, CardMedia, CardContent, Button } from "@mui/material";
 
 const examples = [

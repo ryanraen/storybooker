@@ -1,4 +1,3 @@
-import React from "react";
 import { Typography, Paper, Button, Stack, TextField } from "@mui/material";
 
 export default function Generate() {

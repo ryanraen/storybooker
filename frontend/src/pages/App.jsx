@@ -1,4 +1,3 @@
-import React from "react";
 import { Box, Container, Typography, Button, Card, CardContent, AppBar, Toolbar } from "@mui/material";
 import { Book, AutoStories, AutoFixHigh } from "@mui/icons-material";
 

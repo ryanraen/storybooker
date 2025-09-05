@@ -1,4 +1,3 @@
-import React from "react";
 import { Typography, Paper, List, ListItem, ListItemText } from "@mui/material";
 
 const historyItems = [
