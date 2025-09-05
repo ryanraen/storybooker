@@ -19,6 +19,12 @@ export default function Generate() {
 
       <Stack spacing={3} mt={3}>
         <TextField
+          label="Title"
+          placeholder="e.g. Tale of the Truthful Dragon"
+          fullWidth
+          variant="outlined"
+        />
+        <TextField
           label="Story Idea"
           placeholder="e.g. A dragon learns about honesty"
           fullWidth
