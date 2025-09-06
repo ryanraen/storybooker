@@ -1,14 +1,14 @@
 import os
+import tempfile
 from mcp.server import FastMCP
 from openai import OpenAI
 from dotenv import load_dotenv
 import json
-from PIL import Image as PImg
+from PIL import Image
 from google import genai
 from google.genai.types import (
     HttpOptions,
 )
-from PIL import Image
 import base64
 import cv2
 import textwrap
@@ -26,6 +26,8 @@ gcloud_client = genai.Client(http_options=HttpOptions(api_version="v1"),
 
 mcp = FastMCP(name="MCP Server",
               stateless_http=False)
+
+temp_dir = tempfile.TemporaryDirectory()
 
 @mcp.tool()
 def storyboarder(prompt: str) -> dict:
@@ -71,14 +73,15 @@ def storyboarder(prompt: str) -> dict:
     return json.loads(response.output_text)
 
 @mcp.tool()
-def character_base_image_gen(name: str, description: str) -> str:
+def character_base_image_gen(name: str, description: str, output_directory: str) -> str:
     """
     Purpose: Given physical descriptions of a character, generates a base image for it
     Input: name is the name of the character in all lower case (eg. peppa pig); 
            description is the additional specified physical traits of the character being generated (eg. "pig, red shirt, happy, green shoes").
-    Output: the generated image is stored in "backend/res/base/" as "{name}.png" where any spaces in name are replaced with underscores.
+           output_directory is the directory where the generated image should be stored (eg. "/tmp/tmpkbm4cbd7")
+    Output: the generated image is stored in "{output_directory}/base/" as "{name}.png" where any spaces in name are replaced with underscores.
     """
-    out_dir = "backend/res/base/"
+    out_dir = output_directory + "/base/"
     
     traits = gcloud_client.models.generate_content(
         model="gemini-2.5-flash",
@@ -122,7 +125,7 @@ def encode_image(image_path):
         return base64.b64encode(image_file.read()).decode("utf-8")
 
 @mcp.tool()
-def scene_creator(scene_index: int, requirements: str, images: list) -> str:
+def scene_creator(scene_index: int, requirements: str, images: list, output_directory: str) -> str:
     """
     Purpose: Given requirements for a scene in the story book, generates one image for it.
     Input: requirements is the text requirement prompt for generating the scene image, 
@@ -130,9 +133,10 @@ def scene_creator(scene_index: int, requirements: str, images: list) -> str:
            scene_index is the page number of the scene being generated
            images is a list of the file names of the characters appearing in the scene,
            eg. ["peppa_pig.png", "george.png", ...]
-    Output: Generated scene image is stored as "scene_{scene_index}.png" in "backend/res/scene/"
+           output_directory is the directory where the generated scene image should be stored (eg. "/tmp/tmpkbm4cbd7")
+    Output: Generated scene image is stored as "scene_{scene_index}.png" in "{output_directory}/scene/"
     """
-    out_dir = "backend/res/scene/"
+    out_dir = output_directory + "/scene/"
     
     base64_images = [encode_image("backend/res/base/" + path) for path in images]
         
@@ -167,15 +171,16 @@ def scene_creator(scene_index: int, requirements: str, images: list) -> str:
     return "Tool executed successfully."
 
 @mcp.tool()
-def narration_writer(scene_index: int, narration: str) -> str:
+def narration_writer(scene_index: int, narration: str, output_directory: str) -> str:
     """
     Purpose: Given the page number and narration of the scene, overlays the narration text on the scene image
     Input: scene_index is the page number of the scene being modified
            narration is the narration text that should be added to the scene
-    Output: Modified scene image is stored as "scene_{scene_index}.png" in "backend/res/pages/"
+           output_directory is the directory where the modified image should be stored (eg. "/tmp/tmpkbm4cbd7")
+    Output: Modified scene image is stored as "scene_{scene_index}.png" in "{output_directory}/pages/"
     """
-    in_dir = "backend/res/scene/"
-    out_dir = "backend/res/pages/"
+    in_dir = output_directory + "/scene/"
+    out_dir = output_directory + "/pages/"
 
     image = cv2.imread(in_dir + f"scene_{scene_index}.png")
     img_height, img_width, img_channels = image.shape
@@ -219,18 +224,20 @@ def narration_writer(scene_index: int, narration: str) -> str:
 
     cv2.imwrite(out_dir + f"scene_{scene_index}.png", image)
     
-@mcp.tool()
-def pdf_compiler(title: str) -> str:
-    """
-    Purpose: Combines the 6 final narrated scene images into a single PDF storybook.
-    Input: title is a short and brief title for the final completed storybook
-    Output: The completed storybook PDF is stored as "./res/final/{title in all lowercase with all " " replaced with "_"}.pdf".
-    """
-    out_dir = "backend/res/final/"
-    out_filename = title.lower().replace(" ", "_")
-    pages = [Image.open(f"backend/res/pages/scene_{index}.png") for index in range(1, 7)]
-    pages[0].save(
-        out_dir + out_filename + ".pdf", "PDF" ,resolution=100.0, save_all=True, append_images=pages[1:]
-    )
+# @mcp.tool()
+# def pdf_compiler(title: str, output_directory: str) -> str:
+#     """
+#     Purpose: Combines the 6 final narrated scene images into a single PDF storybook.
+#     Input: title is a short and brief title for the final completed storybook
+#            output_directory is the directory where the generated images have been stored (eg. "/tmp/tmpkbm4cbd7")
+#     Output: The completed storybook PDF is stored as "{output_directory}/final/{title in all lowercase with all " " replaced with "_"}.pdf".
+#     """
+#     in_dir = output_directory + "/pages/"
+#     out_dir = output_directory + "/final/"
+#     out_filename = title.lower().replace(" ", "_")
+#     pages = [Image.open(f"{in_dir}scene_{index}.png") for index in range(1, 7)]
+#     pages[0].save(
+#         out_dir + out_filename + ".pdf", "PDF" ,resolution=100.0, save_all=True, append_images=pages[1:]
+#     )
     
 mcp.run(transport="stdio")
