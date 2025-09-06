@@ -4,8 +4,10 @@ from strands.models.openai import OpenAIModel
 from strands.tools.mcp import MCPClient
 from mcp.client.stdio import stdio_client, StdioServerParameters
 from dotenv import load_dotenv
+import tempfile
+from PIL import Image
 
-def run(user_input: str) -> None:
+def run(user_input: str, temp_dir: str) -> None:
     print("Connecting to server...")
     mcp_client = MCPClient(lambda: stdio_client(StdioServerParameters(
         command="python",
@@ -64,7 +66,7 @@ def run(user_input: str) -> None:
                         - Call character_base_image_gen with:
                             - name (all lowercase, spaces replaced with underscores)
                             - description (physical traits)
-                        - Save generated base images in backend/res/base/{name}.png.
+                        - Save generated base images in {temp_dir}/base/{name}.png.
                 4. Generate Scenes
                     - For each storyboard page (1–6):
                         - Construct a requirements string combining the background, narration context, and character placements.
@@ -72,7 +74,7 @@ def run(user_input: str) -> None:
                             - requirements (scene description with characters, background, narration guidance)
                             - scene_index (page number 1–6)
                             - images (list of character base image filenames).
-                        - Store final scene image in backend/res/scene/scene_{scene_index}.png.
+                        - Store final scene image in {temp_dir}/scene/scene_{scene_index}.png.
                     - Track internally (in memory) which scene indices (1–6) have been sent to scene_creator.
                     - Track which scene indices the tool successfully responded to.
                     - If any are missing, retry those specific indices until all 6 are completed.
@@ -81,7 +83,9 @@ def run(user_input: str) -> None:
                         - Call narration_writer with:
                             - scene_index (page number)
                             - narration (text from the storyboard for that page)
-                        - Store the final scene with narration in backend/res/pages/scene_{scene_index}.png.
+                        - Store the final scene with narration in {temp_dir}/pages/scene_{scene_index}.png.
+                        
+                6. Return "Storybook generation complete."
 
                 # Constraints
                 1. Always generate exactly 6 pages. Do not output fewer or more.
@@ -90,27 +94,33 @@ def run(user_input: str) -> None:
                 4. Scenes must clearly reflect narration and emotional tone.
                 5. If ambiguity arises in user prompt, make reasonable assumptions and proceed.
                 6. You must keep calling tools until the final illustrated book is ready. Do not ask the user anything in between.
-                """,
+                """ + f"\n# Output Directory\nAll generated images must be stored in the temporary directory: {temp_dir}",
                 )
             
             mcp_tools = mcp_client.list_tools_sync()
             print(f"Available tools: {[tool.tool_name for tool in mcp_tools]}")
             
             agent.tool_registry.process_tools(mcp_tools)
-                        
-            # while True:
-            #     user_input = input("\nPlease enter a comic story idea.\n")
-                
-            #     if user_input.lower() in ["exit", "quit", "bye", "stop"]:
-            #             print("See you next time!")
-            #             break
-                    
-            #     print("Processing request...")
-                
-            #     result = agent(user_input)
             
             result = agent(user_input)
+            
+            while not result.message == "Storybook generation complete.":
+                result = agent("Continue the process.")
+            
+            print("Storybook generation complete.")
+            
+            return pdf_compiler(temp_dir)
                 
     except Exception as e:
             print("SERVER CONNECTION FAILED: " + str(e.with_traceback(None)))
 
+def pdf_compiler(output_directory: str) -> bytes:
+    """
+    Purpose: Combines the 6 final narrated scene images into a single PDF storybook.
+    Input: output_directory is the directory where the generated images have been stored (eg. "/tmp/tmpkbm4cbd7")
+    Output: The completed storybook PDF is returned as a bytes object".
+    """
+    in_dir = output_directory + "/pages/"
+    pages = [Image.open(f"{in_dir}scene_{index}.png") for index in range(1, 7)]
+    pdf_bytes = pages[0].tobytes()
+    return pdf_bytes
