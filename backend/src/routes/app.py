@@ -1,10 +1,14 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 from services.agent import run
 import os
 from supabase import create_client, Client
 import dotenv
+import tempfile
+from PIL import Image
 
 app = Flask(__name__)
+CORS(app)
 
 dotenv.load_dotenv()
 
@@ -121,8 +125,8 @@ def logout():
         return jsonify({"message": "User logged out"}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 400
-    
-# Helpers
+
+# auth helper
 def get_current_user():
     auth_header = request.headers.get("Authorization")
     if not auth_header or not auth_header.startswith("Bearer "):
@@ -138,7 +142,45 @@ def get_current_user():
     except Exception as e:
         return None, (jsonify({"error": str(e)}), 401)
     
+
+def fake_run(prompt: str, temp_dir: str) -> bytes:
+    in_dir = "/home/ryanraen/storybooker/backend/res/pages/"
+    pages = [Image.open(f"{in_dir}scene_{index}.png") for index in range(1, 7)]
+    with tempfile.NamedTemporaryFile(mode="wb", dir=temp_dir) as temp_pdf:        
+        pages[0].save(
+            temp_pdf.name, "PDF" ,resolution=100.0, save_all=True, append_images=pages[1:]
+        )
+        return open(temp_pdf.name, "rb").read()
+    
 # Agent
 @app.route("/generate", methods = ["POST"])
 def generate():
-    ...
+    user, error = get_current_user()
+    if error:
+        return error
+    
+    data = request.json
+    prompt = data.get("prompt")
+    
+    # plan = supabase.table("profiles").eq("id", user.id).select("subscription_tier").execute().data[0]
+    # TODO implement subscription auth later
+    
+    with tempfile.TemporaryDirectory() as temp_dir:
+        pdf_bytes = fake_run(prompt, temp_dir)
+        if not pdf_bytes:
+            return jsonify({"error": "Storybook generation failed"}), 500
+        
+        filename = prompt[:50].replace(" ", "_") + ".pdf" # TODO use title from user 
+        upload_url = (
+            supabase.storage.from_("storybook_pdfs").create_signed_upload_url(user.id + "/" + filename)
+        )
+        response = (
+            supabase.storage
+            .from_("storybook_pdfs")
+            .upload_to_signed_url(
+                path=user.id + "/" + filename,
+                token=upload_url["token"],
+                file=pdf_bytes,
+            )
+        )
+    return jsonify({"message": "Storybook generated successfully"}), 200
