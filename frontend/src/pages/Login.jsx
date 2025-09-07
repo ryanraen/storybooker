@@ -23,15 +23,15 @@ export default function Login() {
         setError("");
 
         try {
-            const response = await fetch("http://localhost:5000/user/login", {
+            const res = await fetch("http://localhost:5000/user/login", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, password }),
             });
 
-            if (!response.ok) throw new Error("Login failed");
+            if (!res.ok) throw new Error("Login failed");
 
-            const data = await response.json();
+            const data = await res.json();
             localStorage.setItem("token", data.session.access_token);
             navigate("/dashboard");
         } catch (err) {
@@ -77,6 +77,7 @@ export default function Login() {
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             variant="outlined"
+                            required
                         />
                         <TextField
                             label="Password"
@@ -85,6 +86,7 @@ export default function Login() {
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             variant="outlined"
+                            required
                         />
 
                         {error && (
@@ -113,7 +115,7 @@ export default function Login() {
                             <Link href="#" variant="body2" underline="hover">
                                 Forgot password?
                             </Link>
-                            <Link href="#" variant="body2" underline="hover">
+                            <Link href="/signup" variant="body2" underline="hover">
                                 Create account
                             </Link>
                         </Stack>
