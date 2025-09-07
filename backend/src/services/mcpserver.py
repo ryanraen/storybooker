@@ -79,9 +79,9 @@ def character_base_image_gen(name: str, description: str, output_directory: str)
     Input: name is the name of the character in all lower case (eg. peppa pig); 
            description is the additional specified physical traits of the character being generated (eg. "pig, red shirt, happy, green shoes").
            output_directory is the directory where the generated image should be stored (eg. "/tmp/tmpkbm4cbd7")
-    Output: the generated image is stored in "{output_directory}/base/" as "{name}.png" where any spaces in name are replaced with underscores.
+    Output: the generated image is stored in "{output_directory}/" as "{name}.png" where any spaces in name are replaced with underscores.
     """
-    out_dir = output_directory + "/base/"
+    out_dir = output_directory + "/"
     
     traits = gcloud_client.models.generate_content(
         model="gemini-2.5-flash",
@@ -134,11 +134,11 @@ def scene_creator(scene_index: int, requirements: str, images: list, output_dire
            images is a list of the file names of the characters appearing in the scene,
            eg. ["peppa_pig.png", "george.png", ...]
            output_directory is the directory where the generated scene image should be stored (eg. "/tmp/tmpkbm4cbd7")
-    Output: Generated scene image is stored as "scene_{scene_index}.png" in "{output_directory}/scene/"
+    Output: Generated scene image is stored as "scene_{scene_index}.png" in "{output_directory}/"
     """
-    out_dir = output_directory + "/scene/"
+    out_dir = output_directory + "/"
     
-    base64_images = [encode_image("backend/res/base/" + path) for path in images]
+    base64_images = [encode_image(output_directory + "/" + path) for path in images]
         
     request_content = [
         {"type": "input_text", "text": requirements},
@@ -177,10 +177,10 @@ def narration_writer(scene_index: int, narration: str, output_directory: str) ->
     Input: scene_index is the page number of the scene being modified
            narration is the narration text that should be added to the scene
            output_directory is the directory where the modified image should be stored (eg. "/tmp/tmpkbm4cbd7")
-    Output: Modified scene image is stored as "scene_{scene_index}.png" in "{output_directory}/pages/"
+    Output: Modified scene image is stored as "scene_{scene_index}_narrated.png" in "{output_directory}/"
     """
-    in_dir = output_directory + "/scene/"
-    out_dir = output_directory + "/pages/"
+    in_dir = output_directory + "/"
+    out_dir = output_directory + "/"
 
     image = cv2.imread(in_dir + f"scene_{scene_index}.png")
     img_height, img_width, img_channels = image.shape
@@ -222,7 +222,8 @@ def narration_writer(scene_index: int, narration: str, output_directory: str) ->
                     font_thickness, 
                     lineType = cv2.LINE_AA)
 
-    cv2.imwrite(out_dir + f"scene_{scene_index}.png", image)
+    cv2.imwrite(out_dir + f"scene_{scene_index}_narrated.png", image)
+    return "Tool executed successfully."
     
 # @mcp.tool()
 # def pdf_compiler(title: str, output_directory: str) -> str:
