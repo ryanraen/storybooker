@@ -32,10 +32,11 @@ export default function Login() {
             if (!response.ok) throw new Error("Login failed");
 
             const data = await response.json();
-            localStorage.setItem("token", data.token);
+            localStorage.setItem("token", data.session.access_token);
             navigate("/dashboard");
         } catch (err) {
-            setError("Invalid email or password: " + err.message);
+            setError("Invalid email or password");
+            console.log(err.message);
         }
     };
 
