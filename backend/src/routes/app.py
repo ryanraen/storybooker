@@ -13,7 +13,7 @@ CORS(app)
 dotenv.load_dotenv()
 
 url = os.environ.get("SUPABASE_URL")
-key = os.environ.get("SUPABASE_ANON_KEY")
+key = os.environ.get("SUPABASE_SECRET_KEY")
 supabase = create_client(url, key)
 
 # user should be able to:
@@ -42,7 +42,7 @@ def signup():
             })
         user_id = auth_response.user.id
         supabase.table("profiles").insert({
-            "id": user_id,
+            "user_id": user_id,
             "username": username
             }).execute()
         return jsonify({"message": "User created", "user": user_id}), 201
@@ -163,7 +163,7 @@ def generate():
     title = data.get("title")
     prompt = data.get("prompt")
     
-    # plan = supabase.table("profiles").eq("id", user.id).select("subscription_tier").execute().data[0]
+    # plan = supabase.table("profiles").eq("user_id", user.id).select("subscription_tier").execute().data[0]
     # TODO implement subscription auth later
     
     pdf_bytes = run(prompt)
