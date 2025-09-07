@@ -1,6 +1,33 @@
+import { useState } from "react";
 import { Typography, Paper, Button, Stack, TextField } from "@mui/material";
 
 export default function Generate() {
+
+  const [title, setTitle] = useState("");
+  const [prompt, setPrompt] = useState("");
+  const [error, setError] = useState("");
+
+  const handleGenerate = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    try {
+      const response = await fetch("http://localhost:5000/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${localStorage.getItem("token")}` },
+        body: JSON.stringify({ title, prompt }),
+      });
+
+      if (!response.ok) throw new Error("Generation failed");
+
+      const data = await response.json();
+      console.log(data.message);
+    } catch (err) {
+      setError("Invalid generation request");
+      console.log(err.message);
+    }
+  };
+
   return (
     <Paper
       sx={{
@@ -17,32 +44,42 @@ export default function Generate() {
         Enter your idea and generate a custom storybook instantly.
       </Typography>
 
-      <Stack spacing={3} mt={3}>
-        <TextField
-          label="Title"
-          placeholder="e.g. Tale of the Truthful Dragon"
-          fullWidth
-          variant="outlined"
-        />
-        <TextField
-          label="Story Idea"
-          placeholder="e.g. A dragon learns about honesty"
-          fullWidth
-          variant="outlined"
-        />
-        <Button
-          variant="contained"
-          sx={{
-            bgcolor: "black",
-            "&:hover": { bgcolor: "#111" },
-            textTransform: "none",
-            borderRadius: 2,
-            py: 1.2,
-          }}
-        >
-          Generate
-        </Button>
-      </Stack>
+      <form onSubmit={handleGenerate}>
+        <Stack spacing={3} mt={3}>
+          <TextField
+            label="Title"
+            placeholder="e.g. Tale of the Truthful Dragon"
+            fullWidth
+            onChange={(e) => setTitle(e.target.value)}
+            variant="outlined"
+          />
+          <TextField
+            label="Story Idea"
+            placeholder="e.g. A dragon learns about honesty"
+            fullWidth
+            onChange={(e) => setPrompt(e.target.value)}
+            variant="outlined"
+          />
+          <Button
+            type="submit"
+            variant="contained"
+            sx={{
+              bgcolor: "black",
+              "&:hover": { bgcolor: "#111" },
+              textTransform: "none",
+              borderRadius: 2,
+              py: 1.2,
+            }}
+          >
+            Generate
+          </Button>
+          {error && (
+            <Typography color="error" fontSize="0.9rem">
+              {error}
+            </Typography>
+          )}
+        </Stack>
+      </form>
     </Paper>
   );
 }
