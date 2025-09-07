@@ -26,7 +26,7 @@ export default function App() {
                                 key={item}
                                 color="inherit"
                                 href={
-                                    item === "Get Started" ? "/dashboard" : ("#" + item.toLowerCase().replace(/ /g, "-"))
+                                    item === "Get Started" ? "/login" : ("#" + item.toLowerCase().replace(/ /g, "-"))
                                 }>
                                 {item}
                             </Button>
@@ -45,7 +45,7 @@ export default function App() {
                         Storybooker lets you create storybooks that adapt to your child’s interests, behaviors, and developmental needs. From teaching morals to encouraging creativity, every story is a unique experience.
                     </Typography>
                     <Box sx={{ display: "flex", gap: 2 }}>
-                        <Button variant="contained" size="large" href="/dashboard">Create Your Storybook</Button>
+                        <Button variant="contained" size="large" href="/login">Create Your Storybook</Button>
                         <Button variant="outlined" size="large" href="/examples">See Examples</Button>
                     </Box>
                 </Box>
