@@ -33,7 +33,7 @@
 <!-- ![Storybooker Demo](frontend/public/storybook-preview.png)  
 *Demo using prompt: "A bunny learns to be brave at school"* -->
 
-![Storybooker Demo](dragon_demo.png)
+![Storybooker Demo](frontend/public/dragon_demo.png)
 *Demo using prompt: "A dragon learns to be honest"*
 
 
