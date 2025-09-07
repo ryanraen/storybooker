@@ -1,4 +1,4 @@
-import { Routes, Route, Link, useLocation } from "react-router";
+import { Routes, Route, Link, useLocation, useNavigate } from "react-router";
 import {
   Box,
   Drawer,
@@ -10,10 +10,12 @@ import {
   AppBar,
   Typography,
   Paper,
+  Button,
 } from "@mui/material";
 import { AutoAwesome, History } from "@mui/icons-material";
 import Generate from "./Generate";
 import HistoryPage from "./History";
+import LogoutButton from "../components/LogoutButton";
 
 const drawerWidth = 240;
 
@@ -27,7 +29,6 @@ export default function Dashboard() {
 
   return (
     <Box sx={{ display: "flex", bgcolor: "#f9fafb", minHeight: "100vh" }}>
-      {/* Top AppBar */}
       <AppBar
         position="fixed"
         elevation={0}
@@ -41,10 +42,10 @@ export default function Dashboard() {
           <Typography variant="h6" color="text.primary" fontWeight="bold">
             Dashboard
           </Typography>
+          <LogoutButton />
         </Toolbar>
       </AppBar>
 
-      {/* Sidebar Drawer */}
       <Drawer
         variant="permanent"
         sx={{
@@ -89,7 +90,7 @@ export default function Dashboard() {
         </Box>
       </Drawer>
 
-      {/* Main Content */}
+      {/* content */}
       <Box
         component="main"
         sx={{
