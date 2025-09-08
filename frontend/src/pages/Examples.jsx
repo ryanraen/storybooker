@@ -3,9 +3,14 @@ import { Box, Typography, Grid, Card, CardMedia, CardContent, Button } from "@mu
 const examples = [
     // placeholders
     {
+        title: "The Truthful Dragon",
+        description: "A dragon who learns the value of honesty through magical adventures.",
+        image: "/dragon_demo.png",
+    },
+    {
         title: "The Brave Bunny",
         description: "A little bunny who overcomes fears and discovers bravery on her first day of school.",
-        image: "/storybook-preview.png",
+        image: "/bunny_demo.png",
     },
     // {
     //     title: "The Honest Dragon",
