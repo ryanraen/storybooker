@@ -121,6 +121,7 @@ def run(user_input: str) -> bytes:
                     result = agent(input())
                 print("Agent finished all tasks.")
                 
+                # compile pdf
                 in_dir = temp_dir + "/"
                 pages = [Image.open(f"{in_dir}scene_{index}_narrated.png") for index in range(1, 7)]
                 with tempfile.NamedTemporaryFile(mode="wb", dir=in_dir) as temp_pdf:        
@@ -131,17 +132,4 @@ def run(user_input: str) -> bytes:
                     
         except Exception as e:
             print("SERVER CONNECTION FAILED: " + str(e.with_traceback(None)))
-
-# def pdf_compiler(output_directory: str) -> bytes:
-#     """
-#     Purpose: Combines the 6 final narrated scene images into a single PDF storybook.
-#     Input: output_directory is the directory where the generated images have been stored (eg. "/tmp/tmpkbm4cbd7")
-#     Output: The completed storybook PDF is returned as a bytes object".
-#     """
-#     in_dir = output_directory + "/"
-#     pages = [Image.open(f"{in_dir}scene_{index}_narrated.png") for index in range(1, 7)]
-#     with tempfile.NamedTemporaryFile(mode="wb", dir=in_dir) as temp_pdf:        
-#         pages[0].save(
-#             temp_pdf.name, "PDF" ,resolution=100.0, save_all=True, append_images=pages[1:]
-#         )
-#     return open(temp_pdf.name, "rb").read()
+            

@@ -163,16 +163,25 @@ def generate():
     title = data.get("title")
     prompt = data.get("prompt")
     
-    # plan = supabase.table("profiles").eq("user_id", user.id).select("subscription_tier").execute().data[0]
-    # TODO implement subscription auth later
+    # plan = supabase.table("profiles").("user_id", user.id).select("subscription_tier").execute().data[0]
+    profile = supabase.table("profiles").select("*").eq("user_id", user.id).maybe_single().execute().data
+    if not profile:
+        return jsonify({"error": "User profile not found"}), 404
+    remaining_gens = profile.get("remaining_gens")
+    if remaining_gens is None or remaining_gens <= 0:
+        return jsonify({"error": "No remaining storybook generations. Please upgrade your plan."}), 403
     
+    # decrement remaining_gens
+    supabase.table("profiles").update({"remaining_gens": remaining_gens - 1}).eq("user_id", user.id).execute()
+    
+    # run agent
     pdf_bytes = run(prompt)
     if not pdf_bytes:
         return jsonify({"error": "Storybook generation failed"}), 500
     
     filename = title[:50].replace(" ", "_") + ".pdf"
     upload_url = (
-        supabase.storage.from_("storybook_pdfs").create_signed_upload_url(user.id + "/" + filename) # TODO replace signed upload url with diff method; could be security concern
+        supabase.storage.from_("storybook_pdfs").create_signed_upload_url(user.id + "/" + filename) # TODO could be security concern; replace signed upload url with diff method 
     )
     response = (
         supabase.storage
