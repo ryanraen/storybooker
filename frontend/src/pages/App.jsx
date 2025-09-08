@@ -1,4 +1,4 @@
-import { Box, Container, Typography, Button, Card, CardContent, AppBar, Toolbar } from "@mui/material";
+import { Box, Container, Typography, Button, Card, CardContent, AppBar, Toolbar, Grid, CardMedia } from "@mui/material";
 import { Book, AutoStories, AutoFixHigh } from "@mui/icons-material";
 
 export default function App() {
@@ -12,6 +12,40 @@ export default function App() {
         { title: "Enter a Scenario", desc: "Describe a situation or moral you want to teach, like honesty or kindness." },
         { title: "Personalize the Story", desc: "Choose favorite characters, settings, and other elements that resonate with your child." },
         { title: "Generate & Share", desc: "Get an interactive storybook instantly, ready to read, share, or print." }
+    ];
+
+    const examples = [
+        // placeholders
+        {
+            title: "The Truthful Dragon",
+            description: "A dragon who learns the value of honesty through magical adventures.",
+            image: "/dragon_demo.png",
+        },
+        {
+            title: "The Brave Bunny",
+            description: "A little bunny who overcomes fears and discovers bravery on her first day of school.",
+            image: "/bunny_demo.png",
+        },
+        // {
+        //     title: "The Honest Dragon",
+        //     description: "A dragon who learns the value of honesty through magical adventures.",
+        //     image: "/examples/honest-dragon.png",
+        // },
+        // {
+        //     title: "Luna’s Space Journey",
+        //     description: "Follow Luna as she travels across the stars to make new friends.",
+        //     image: "/examples/luna-space.png",
+        // },
+        // {
+        //     title: "The Brave Little Fox",
+        //     description: "A story about courage, kindness, and helping others in the forest.",
+        //     image: "/examples/brave-fox.png",
+        // },
+        // {
+        //     title: "The Lost Pirate Treasure",
+        //     description: "Pirates and children team up to discover the true treasure: friendship.",
+        //     image: "/examples/pirate-treasure.png",
+        // },
     ];
 
     return (
@@ -50,9 +84,53 @@ export default function App() {
                     </Box>
                 </Box>
                 <Box flex={1}>
-                    <img src="/medium-shot-mother-holding-kid-laptop.jpg" alt="Storybook preview" style={{ borderRadius: 16, width: "100%", boxShadow: "0 10px 30px rgba(0,0,0,0.1)" }} />
+                    <img src="/dragon_demo.png" alt="Storybook preview" style={{ borderRadius: 16, width: "100%", boxShadow: "0 10px 30px rgba(0,0,0,0.1)" }} />
+                    {/* alternate header image medium-shot-mother-holding-kid-laptop.jpg */}
                 </Box>
             </Container>
+
+            {/* Examples */}
+            <Box sx={{ py: 8, px: { xs: 2, md: 8 } }}>
+                <Box sx={{ textAlign: "center", mb: 6 }}>
+                    <Typography variant="h3" fontWeight="bold" gutterBottom>
+                        See Example Storybooks
+                    </Typography>
+                    <Typography variant="h6" color="text.secondary">
+                        Browse through some of the magical storybooks our agent can create from just one idea.
+                    </Typography>
+                </Box>
+
+                <Grid container spacing={4}>
+                    {examples.map((example, index) => (
+                        <Grid item xs={12} sm={6} md={3} key={index}>
+                            <Card
+                                sx={{
+                                    borderRadius: "20px",
+                                    boxShadow: 3,
+                                    height: "100%",
+                                    display: "flex",
+                                    flexDirection: "column",
+                                }}
+                            >
+                                <CardMedia
+                                    component="img"
+                                    image={example.image}
+                                    alt={example.title}
+                                    sx={{ borderTopLeftRadius: "20px", borderTopRightRadius: "20px", height: 420, }}
+                                />
+                                <CardContent sx={{ flexGrow: 1 }}>
+                                    <Typography variant="h6" fontWeight="bold">
+                                        {example.title}
+                                    </Typography>
+                                    <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                                        {example.description}
+                                    </Typography>
+                                </CardContent>
+                            </Card>
+                        </Grid>
+                    ))}
+                </Grid>
+            </Box>
 
             {/* Features */}
             <Container maxWidth="lg" sx={{ py: 10 }} id="features">
