@@ -56,8 +56,9 @@ def storyboarder(prompt: str) -> dict:
             - characters: list of character names in that panel and physical description of the character (eg. name: "Peppa Pig"; description: "pig, red shirt, happy, green shoes")
             - background: point form physical description of the background scene (eg. "grass field, sunny, clouds, sparse trees, house in the distance")
             - narration: one line that the narrator should say
-        2. Keep it engaging and age-appropriate.
-        3. Return it as a JSON list of 6 panels like this:
+        2. Keep it engaging and age-appropriate
+        3. Do not use non-conventional ASCII characters (eg. please only use the character ' to represent apostrophes; do not use non-human variations like ’)
+        4. Return it as a JSON list of 6 panels like this:
             [
                 {"characters": [{"name": "...",
                                  "description": "..."},
@@ -224,21 +225,5 @@ def narration_writer(scene_index: int, narration: str, output_directory: str) ->
 
     cv2.imwrite(out_dir + f"scene_{scene_index}_narrated.png", image)
     return "Tool executed successfully."
-    
-# @mcp.tool()
-# def pdf_compiler(title: str, output_directory: str) -> str:
-#     """
-#     Purpose: Combines the 6 final narrated scene images into a single PDF storybook.
-#     Input: title is a short and brief title for the final completed storybook
-#            output_directory is the directory where the generated images have been stored (eg. "/tmp/tmpkbm4cbd7")
-#     Output: The completed storybook PDF is stored as "{output_directory}/final/{title in all lowercase with all " " replaced with "_"}.pdf".
-#     """
-#     in_dir = output_directory + "/pages/"
-#     out_dir = output_directory + "/final/"
-#     out_filename = title.lower().replace(" ", "_")
-#     pages = [Image.open(f"{in_dir}scene_{index}.png") for index in range(1, 7)]
-#     pages[0].save(
-#         out_dir + out_filename + ".pdf", "PDF" ,resolution=100.0, save_all=True, append_images=pages[1:]
-#     )
     
 mcp.run(transport="stdio")
