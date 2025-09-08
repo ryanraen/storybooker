@@ -165,7 +165,7 @@ export default function App() {
             <Box sx={{ py: 10, bgcolor: "#3f51b5", color: "#fff", textAlign: "center" }} id="cta">
                 <Typography variant="h4" fontWeight="bold" mb={2}>Make Every Story Unique</Typography>
                 <Typography mb={4}>From teaching life lessons to sparking imagination, Storybooker lets you create an endless library of interactive, personalized stories.</Typography>
-                <Button variant="contained" color="secondary" size="large" href="/dashboard">Start Creating Now</Button>
+                <Button variant="contained" color="secondary" size="large" href="/login">Start Creating Now</Button>
             </Box>
 
             {/* Footer */}
