@@ -16,9 +16,7 @@ url = os.environ.get("SUPABASE_URL")
 key = os.environ.get("SUPABASE_SECRET_KEY")
 supabase = create_client(url, key)
 
-# user should be able to:
-# sign up 
-# log in
+# TODO user should be able to:
 # reset password
 # log out
 # update profile (email, password, etc.)
@@ -75,35 +73,27 @@ def login():
     except Exception as e:
         return jsonify({"error": str(e)}), 400
     
-@app.route("/user/reset_password", methods = ["POST"])
-def reset_password():
+@app.route("/user/forgot-password", methods = ["POST"])
+def forgot_password():
     data = request.json
     email = data.get("email")
-    redirect_to = data.get("redirect_to") # password reset page
-    user, error = get_current_user()
-    if error:
-        return error
-    if user.email != email:
-        return jsonify({"error": "Email does not match the logged-in user"}), 403
+    reset_page = data.get("reset_page") # password reset page
     try:
         supabase.auth.reset_password_email(
             email,
-            {"redirect_to": redirect_to}
+            {"redirect_to": reset_page}
         )
         return jsonify({"message": "Password reset email sent"}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 400
     
-@app.route("/user/update_password", methods = ["POST"])
-def update_password():
+@app.route("/user/reset-password", methods = ["POST"])
+def reset_password():
     data = request.json
     new_password = data.get("new_password")
-    access_token = request.args.get("access_token")
-    refresh_token = request.args.get("refresh_token")
-    temp_session_response = supabase.auth.set_session({
-        "access_token": access_token,
-        "refresh_token": refresh_token
-    })
+    access_token = data.get("access_token")
+    refresh_token = data.get("refresh_token") # TODO use OTP instead
+    temp_session_response = supabase.auth.set_session(access_token, refresh_token)
     if not temp_session_response.user:
         return jsonify({"error": "Invalid or expired session tokens"}), 401
     try:

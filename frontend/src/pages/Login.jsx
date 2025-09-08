@@ -112,7 +112,7 @@ export default function Login() {
                         </Button>
 
                         <Stack direction="row" justifyContent="space-between" mt={1}>
-                            <Link href="#" variant="body2" underline="hover">
+                            <Link href="/forgot-password" variant="body2" underline="hover">
                                 Forgot password?
                             </Link>
                             <Link href="/signup" variant="body2" underline="hover">
