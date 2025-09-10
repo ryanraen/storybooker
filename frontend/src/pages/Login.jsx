@@ -8,10 +8,12 @@ import {
     Stack,
     Link,
 } from "@mui/material";
-import { useNavigate } from "react-router";
+import { useNavigate, useLocation } from "react-router";
 
 export default function Login() {
     const navigate = useNavigate();
+    const location = useLocation();
+    const successMessage = location.state?.successMessage;
 
     // Form state
     const [email, setEmail] = useState("");
@@ -88,6 +90,22 @@ export default function Login() {
                             variant="outlined"
                             required
                         />
+
+                        {successMessage && (
+                            <Typography
+                                sx={{
+                                    mb: 2,
+                                    px: 3,
+                                    py: 1.5,
+                                    borderRadius: 2,
+                                    bgcolor: "#d1fae5",
+                                    color: "#065f46",
+                                    fontWeight: 500,
+                                }}
+                            >
+                                {successMessage}
+                            </Typography>
+                        )}
 
                         {error && (
                             <Typography color="error" fontSize="0.9rem">

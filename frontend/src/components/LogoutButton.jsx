@@ -4,15 +4,22 @@ import { useNavigate } from "react-router";
 export default function LogoutButton() {
     const navigate = useNavigate();
 
-    const handleLogout = () => {
-        const res = fetch("http://localhost:5000/user/logout", {
-            method: "POST",
-        });
+    const handleLogout = async () => {
+        try {
+            const res = await fetch("http://localhost:5000/user/logout", {
+                method: "POST",
+            });
 
-        if (!res.ok) throw new Error("Logout failed");
-        localStorage.removeItem("token");
+            if (!res.ok) throw new Error("Logout failed");
+            localStorage.removeItem("token");
 
-        navigate("/login");
+            navigate("/login", {
+                state: { successMessage: "Logged out successfully." },
+            });
+        } catch (err) {
+            console.log(err.message);
+        }
+
     };
 
     return (
@@ -23,7 +30,6 @@ export default function LogoutButton() {
                 ml: "auto",
                 borderRadius: 2,
                 textTransform: "none",
-                // bgcolor: "black",
                 borderColor: "#e5e7eb",
                 py: 1.4,
                 fontSize: "1rem",

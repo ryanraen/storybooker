@@ -10,7 +10,6 @@ import Examples from './pages/Examples'
 import Signup from './pages/Signup'
 import Login from './pages/Login'
 import ForgotPassword from './pages/ForgotPassword'
-import ResetPassword from './pages/ResetPassword'
 
 import Dashboard from './pages/Dashboard';
 import Generate from './pages/Generate'
@@ -34,7 +33,6 @@ root.render(
                     <Route path="signup" element={<Signup />} />
                     <Route path="login" element={<Login />} /> 
                     <Route path="forgot-password" element={<ForgotPassword />} />
-                    <Route path="reset-password" element={<ResetPassword />} />
 
                     <Route path="dashboard/" element={<Dashboard />}>
                         <Route index element={<Generate />} />
