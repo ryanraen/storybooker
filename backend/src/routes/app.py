@@ -80,36 +80,55 @@ def forgot_password():
     reset_page = data.get("reset_page") # password reset page
     try:
         supabase.auth.reset_password_email(
-            email,
-            {"redirect_to": reset_page}
+            email
         )
         return jsonify({"message": "Password reset email sent"}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 400
     
-@app.route("/user/reset-password", methods = ["POST"])
-def reset_password():
+# @app.route("/user/reset-password", methods = ["POST"])
+# def reset_password():
+#     data = request.json
+#     new_password = data.get("new_password")
+#     access_token = data.get("access_token")
+#     refresh_token = data.get("refresh_token") # TODO use OTP instead
+#     temp_session_response = supabase.auth.set_session(access_token, refresh_token)
+#     if not temp_session_response.user:
+#         return jsonify({"error": "Invalid or expired session tokens"}), 401
+#     try:
+#         auth_response = supabase.auth.update_user({"password": new_password})
+#         if not auth_response.user:
+#             return jsonify({"error": "Password update failed"}), 400
+        
+#         return jsonify({"message": "Password updated successfully"}), 200
+#     except Exception as e:
+#         return jsonify({"error": str(e)}), 400
+
+@app.route("/user/verify-otp", methods = ["POST"])
+def verify_otp():
     data = request.json
-    new_password = data.get("new_password")
-    access_token = data.get("access_token")
-    refresh_token = data.get("refresh_token") # TODO use OTP instead
-    temp_session_response = supabase.auth.set_session(access_token, refresh_token)
-    if not temp_session_response.user:
-        return jsonify({"error": "Invalid or expired session tokens"}), 401
+    email = data.get("email")
+    otp = data.get("otp")
+    password = data.get("password")
     try:
-        auth_response = supabase.auth.update_user({"password": new_password})
+        auth_response = supabase.auth.verify_otp({
+            "email": email,
+            "token": otp,
+            "type": "email"
+        })
         if not auth_response.user:
+            return jsonify({"error": "OTP verification failed"}), 400
+        
+        update_response = supabase.auth.update_user({"password": password})
+        if not update_response.user:
             return jsonify({"error": "Password update failed"}), 400
         
-        return jsonify({"message": "Password updated successfully"}), 200
+        return jsonify({"message": "OTP verified and password set successfully"}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 400
         
 @app.route("/user/logout", methods = ["POST"])
 def logout():
-    user, error = get_current_user()
-    if error:
-        return error
     try:
         supabase.auth.sign_out()
         return jsonify({"message": "User logged out"}), 200
@@ -182,4 +201,12 @@ def generate():
             file=pdf_bytes,
         )
     )
+    
+    supabase.table("storybooks").insert({
+        "user_id": user.id,
+        "title": title,
+        "prompt": prompt,
+        "pdf_path": user.id + "/" + filename
+    }).execute()
+    
     return jsonify({"message": "Storybook generated successfully"}), 200
