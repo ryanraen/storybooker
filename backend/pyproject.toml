@@ -10,6 +10,7 @@ dependencies = [
     "flask-cors>=6.0.1",
     "gcloud[cli]>=0.18.3",
     "google-genai>=1.27.0",
+    "gunicorn>=23.0.0",
     "imageio>=2.37.0",
     "mcp[cli]>=1.11.0",
     "openai>=1.95.1",
