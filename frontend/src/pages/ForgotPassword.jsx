@@ -18,18 +18,23 @@ export default function ForgotPassword() {
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [disabled, setDisabled] = useState(false);
 
   const handleSendOtp = async (e) => {
     e.preventDefault();
     setError("");
     setMessage("");
+    setDisabled(true);
 
     try {
-      const res = await fetch("https://storybooker.fly.dev/user/forgot-password", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
+      const res = await fetch(
+        "https://storybooker.fly.dev/user/forgot-password",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email }),
+        }
+      );
       if (!res.ok) throw new Error("Failed to send OTP");
 
       setOtpSent(true);
@@ -37,6 +42,7 @@ export default function ForgotPassword() {
     } catch {
       setError("Unable to send OTP. Try again.");
     }
+    setDisabled(false);
   };
 
   const handleResetPassword = async (e) => {
@@ -58,7 +64,9 @@ export default function ForgotPassword() {
       setOtp("");
       setPassword("");
       navigate("/login", {
-        state: { successMessage: "Password reset successful! You can now log in." },
+        state: {
+          successMessage: "Password reset successful! You can now log in.",
+        },
       });
     } catch {
       setError("Invalid OTP or unable to reset password.");
@@ -76,7 +84,15 @@ export default function ForgotPassword() {
         p: 2,
       }}
     >
-      <Paper sx={{ p: 5, borderRadius: 3, boxShadow: 3, maxWidth: 420, width: "100%" }}>
+      <Paper
+        sx={{
+          p: 5,
+          borderRadius: 3,
+          boxShadow: 3,
+          maxWidth: 420,
+          width: "100%",
+        }}
+      >
         <Typography variant="h5" fontWeight="bold" gutterBottom>
           Reset Password
         </Typography>
@@ -130,6 +146,7 @@ export default function ForgotPassword() {
                 textTransform: "none",
                 py: 1.3,
               }}
+              disabled={disabled}
             >
               {otpSent ? "Continue" : "Reset Password"}
             </Button>

@@ -1,9 +1,16 @@
-import { useState, useEffect } from 'react';
-import { Typography, Paper, List, ListItem, ListItemText, Button, IconButton } from "@mui/material";
-import DownloadIcon from '@mui/icons-material/Download';
+import { useState, useEffect } from "react";
+import {
+  Typography,
+  Paper,
+  List,
+  ListItem,
+  ListItemText,
+  Button,
+  IconButton,
+} from "@mui/material";
+import DownloadIcon from "@mui/icons-material/Download";
 
 export default function HistoryPage() {
-
   const [historyItems, setHistoryItems] = useState([]);
   const [error, setError] = useState("");
 
@@ -15,7 +22,7 @@ export default function HistoryPage() {
           headers: {
             "Content-Type": "image/png",
             "Content-Disposition": "attachment",
-            "Authorization": `Bearer ${localStorage.getItem("token")}`
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
 
@@ -29,26 +36,32 @@ export default function HistoryPage() {
       }
     };
     fetchHistory();
-  }, [])
+  }, []);
 
   const handleDownload = async (id) => {
     setError("");
 
     try {
-      const res = await fetch("https://storybooker.fly.dev/download?storybook_id=" + id, {
-        method: "GET",
-        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${localStorage.getItem("token")}` },
-      });
+      const res = await fetch(
+        "https://storybooker.fly.dev/download?storybook_id=" + id,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
 
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
 
-      return (data.pdf_data);
+      return data.pdf_data;
     } catch (err) {
       setError("Unable to download storybook");
       console.log(err.message);
     }
-  }
+  };
 
   return (
     <Paper sx={{ p: 5, borderRadius: 3, boxShadow: 2, bgcolor: "white" }}>
@@ -68,10 +81,12 @@ export default function HistoryPage() {
               "&:hover": { bgcolor: "#f9fafb" },
             }}
           >
-
             <ListItemText
               primary={item.title}
-              secondary={new Date(item.date.slice(0, 10)).toLocaleDateString("en-US", { year: 'numeric', month: 'long', day: 'numeric' })}
+              secondary={new Date(item.date.slice(0, 10)).toLocaleDateString(
+                "en-US",
+                { year: "numeric", month: "long", day: "numeric" }
+              )}
             />
 
             <IconButton

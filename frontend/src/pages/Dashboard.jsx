@@ -83,7 +83,10 @@ export default function Dashboard() {
                 <ListItemIcon sx={{ minWidth: 40, color: "text.secondary" }}>
                   {item.icon}
                 </ListItemIcon>
-                <ListItemText primary={item.text} primaryTypographyProps={{ fontWeight: 500 }} />
+                <ListItemText
+                  primary={item.text}
+                  primaryTypographyProps={{ fontWeight: 500 }}
+                />
               </ListItemButton>
             ))}
           </List>

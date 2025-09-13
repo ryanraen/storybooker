@@ -2,26 +2,30 @@ import { useState } from "react";
 import { Typography, Paper, Button, Stack, TextField } from "@mui/material";
 
 export default function Generate() {
-
   const [title, setTitle] = useState("");
   const [prompt, setPrompt] = useState("");
   const [error, setError] = useState("");
   const [pdf, setPdf] = useState("");
+  const [disabled, setDisabled] = useState(false);
 
   const handleGenerate = async (e) => {
     e.preventDefault();
     setError("");
+    setDisabled(true);
 
     try {
       const res = await fetch("https://storybooker.fly.dev/generate", {
         method: "POST",
-        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${localStorage.getItem("token")}` },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
         body: JSON.stringify({ title, prompt }),
       });
 
       if (!res.ok) throw new Error("Generation failed");
 
-      const data = await res.json()
+      const data = await res.json();
       setPdf(data.pdf_data);
     } catch (err) {
       setError("Generation request failed");
@@ -71,6 +75,7 @@ export default function Generate() {
               borderRadius: 2,
               py: 1.2,
             }}
+            disabled={disabled}
           >
             Generate
           </Button>
@@ -86,7 +91,11 @@ export default function Generate() {
             type="application/pdf"
             width="100%"
             height="600px"
-            style={{ marginTop: "20px", borderRadius: "8px", boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)" }}
+            style={{
+              marginTop: "20px",
+              borderRadius: "8px",
+              boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+            }}
           />
         )}
       </form>
