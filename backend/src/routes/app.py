@@ -10,7 +10,7 @@ from base64 import b64encode
 
 def create_app():
     app = Flask(__name__)
-    cors = CORS(app, resources={r"/*": {"origins": "https://storybooker.vercel.app/"}})
+    cors = CORS(app, resources={r"/*": {"origins": "https://storybooker.vercel.app"}})
 
     dotenv.load_dotenv()
 
