@@ -20,13 +20,8 @@ def create_app():
     supabase = create_client(url, key)
 
     # TODO user should be able to:
-    # reset password
-    # log out
     # update profile (email, password, etc.)
-    # generate storybook
     # preview storybook without downloading
-    # download storybook
-    # retrieve past storybooks (history)
     # delete history 
 
     # User
@@ -88,24 +83,6 @@ def create_app():
             return jsonify({"message": "Password reset email sent"}), 200
         except Exception as e:
             return jsonify({"error": str(e)}), 400
-        
-    # @app.route("/user/reset-password", methods = ["POST"])
-    # def reset_password():
-    #     data = request.json
-    #     new_password = data.get("new_password")
-    #     access_token = data.get("access_token")
-    #     refresh_token = data.get("refresh_token") # TODO use OTP instead
-    #     temp_session_response = supabase.auth.set_session(access_token, refresh_token)
-    #     if not temp_session_response.user:
-    #         return jsonify({"error": "Invalid or expired session tokens"}), 401
-    #     try:
-    #         auth_response = supabase.auth.update_user({"password": new_password})
-    #         if not auth_response.user:
-    #             return jsonify({"error": "Password update failed"}), 400
-            
-    #         return jsonify({"message": "Password updated successfully"}), 200
-    #     except Exception as e:
-    #         return jsonify({"error": str(e)}), 400
 
     @app.route("/user/verify-otp", methods = ["POST"])
     def verify_otp():
@@ -156,16 +133,6 @@ def create_app():
         except Exception as e:
             return None, (jsonify({"error": str(e)}), 401)
         
-
-    # def fake_run(prompt: str, temp_dir: str) -> bytes: # for testing without calling LLM services
-    #     in_dir = "/home/ryanraen/storybooker/backend/res/pages/"
-    #     pages = [Image.open(f"{in_dir}scene_{index}.png") for index in range(1, 7)]
-    #     with tempfile.NamedTemporaryFile(mode="wb", dir=temp_dir) as temp_pdf:        
-    #         pages[0].save(
-    #             temp_pdf.name, "PDF" ,resolution=100.0, save_all=True, append_images=pages[1:]
-    #         )
-    #         return open(temp_pdf.name, "rb").read()
-        
     @app.route("/generate", methods = ["POST"])
     def generate():
         user, error = get_current_user()
@@ -213,14 +180,6 @@ def create_app():
         }).execute()
         
         return jsonify({"message": "Storybook generated successfully", "pdf_data": b64encode(pdf_bytes).decode("utf-8")}), 200
-
-    # @app.route("/generate", methods = ["POST"])
-    # def generate():
-    #     data = request.json
-    #     with open("/home/ryanraen/storybooker/backend/res/final/bunny_learns_to_be_brave.pdf", "rb") as pdf_file:
-    #         pdf_data = pdf_file.read()
-    #         return jsonify({"message": "Storybook generated", "pdf_data": b64encode(pdf_data).decode("utf-8")}), 200
-    #     return jsonify({"error": "Error"}), 500
         
     @app.route("/get-history", methods = ["GET"])
     def get_history():
@@ -238,7 +197,7 @@ def create_app():
         except Exception as e:
             return jsonify({"error": str(e)}), 400
         
-    @app.route("/download", methods = ["GET"])
+    @app.route("/book/download", methods = ["GET"])
     def download():
         access_token = request.args.get("access_token")
         user, error = get_current_user(access_token)
@@ -266,5 +225,5 @@ def create_app():
             )
         except Exception as e:
             return jsonify({"error": str(e)}), 400
-        
+
     return app

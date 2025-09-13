@@ -14,6 +14,8 @@ export default function HistoryPage() {
   const [historyItems, setHistoryItems] = useState([]);
   const [error, setError] = useState("");
 
+  const downloadHref = `https://storybooker.fly.dev/book/download?access_token=${localStorage.getItem("token")}&storybook_id=${item.id}`;
+
   useEffect(() => {
     const fetchHistory = async () => {
       try {
@@ -37,31 +39,6 @@ export default function HistoryPage() {
     };
     fetchHistory();
   }, []);
-
-  const handleDownload = async (id) => {
-    setError("");
-
-    try {
-      const res = await fetch(
-        "https://storybooker.fly.dev/download?storybook_id=" + id,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
-
-      return data.pdf_data;
-    } catch (err) {
-      setError("Unable to download storybook");
-      console.log(err.message);
-    }
-  };
 
   return (
     <Paper sx={{ p: 5, borderRadius: 3, boxShadow: 2, bgcolor: "white" }}>
@@ -90,7 +67,7 @@ export default function HistoryPage() {
             />
 
             <IconButton
-              href={`https://storybooker.fly.dev/download?access_token=${localStorage.getItem("token")}&storybook_id=${item.id}`}
+              href={downloadHref}
               color="inherit"
               size="large"
               sx={{
