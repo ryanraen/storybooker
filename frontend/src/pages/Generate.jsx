@@ -26,11 +26,11 @@ export default function Generate() {
       
       const data = await res.json();
       if (res.status === 403) {
-        throw new Error(data.message);
+        throw new Error(data.error);
       } else if (!res.ok) {
         throw new Error("Generation request failed");
       }
-      
+
       setPdf(data.pdf_data);
     } catch (err) {
       setError(err.message);
