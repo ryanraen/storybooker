@@ -25,7 +25,7 @@ export default function Login() {
         setError("");
 
         try {
-            const res = await fetch("https://storybooker-api.vercel.app/user/login", {
+            const res = await fetch("https://storybooker.fly.dev/user/login", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, password }),
