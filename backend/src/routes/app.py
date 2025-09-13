@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, Response, json, request, jsonify
 from flask_cors import CORS
 from services.agent import run
 import os
@@ -6,6 +6,7 @@ from supabase import create_client, Client
 import dotenv
 import tempfile
 from PIL import Image
+from base64 import b64encode
 
 app = Flask(__name__)
 CORS(app)
@@ -136,14 +137,16 @@ def logout():
         return jsonify({"error": str(e)}), 400
 
 # auth helper
-def get_current_user():
-    auth_header = request.headers.get("Authorization")
-    if not auth_header or not auth_header.startswith("Bearer "):
-        return None, (jsonify({"error": "Missing or invalid authorization token"}), 401)
-    
-    token = auth_header.split(" ")[1]  # "Bearer <jwt token>"
+def get_current_user(access_token: str = None):
+    if not access_token:
+        auth_header = request.headers.get("Authorization")
+        if not auth_header or not auth_header.startswith("Bearer "):
+            return None, (jsonify({"error": "Missing or invalid authorization token"}), 401)
+        
+        access_token = auth_header.split(" ")[1]  # "Bearer <jwt token>"
+        
     try:
-        user = supabase.auth.get_user(token).user
+        user = supabase.auth.get_user(access_token).user
         if not user:
             return None, (jsonify({"error": "Invalid or expired authorization token"}), 401)
         
@@ -152,27 +155,25 @@ def get_current_user():
         return None, (jsonify({"error": str(e)}), 401)
     
 
-def fake_run(prompt: str, temp_dir: str) -> bytes: # for testing without calling LLM services
-    in_dir = "/home/ryanraen/storybooker/backend/res/pages/"
-    pages = [Image.open(f"{in_dir}scene_{index}.png") for index in range(1, 7)]
-    with tempfile.NamedTemporaryFile(mode="wb", dir=temp_dir) as temp_pdf:        
-        pages[0].save(
-            temp_pdf.name, "PDF" ,resolution=100.0, save_all=True, append_images=pages[1:]
-        )
-        return open(temp_pdf.name, "rb").read()
+# def fake_run(prompt: str, temp_dir: str) -> bytes: # for testing without calling LLM services
+#     in_dir = "/home/ryanraen/storybooker/backend/res/pages/"
+#     pages = [Image.open(f"{in_dir}scene_{index}.png") for index in range(1, 7)]
+#     with tempfile.NamedTemporaryFile(mode="wb", dir=temp_dir) as temp_pdf:        
+#         pages[0].save(
+#             temp_pdf.name, "PDF" ,resolution=100.0, save_all=True, append_images=pages[1:]
+#         )
+#         return open(temp_pdf.name, "rb").read()
     
-# Agent
 @app.route("/generate", methods = ["POST"])
 def generate():
     user, error = get_current_user()
-    if error:
+    if not user or error:
         return error
     
     data = request.json
     title = data.get("title")
     prompt = data.get("prompt")
     
-    # plan = supabase.table("profiles").("user_id", user.id).select("subscription_tier").execute().data[0]
     profile = supabase.table("profiles").select("*").eq("user_id", user.id).maybe_single().execute().data
     if not profile:
         return jsonify({"error": "User profile not found"}), 404
@@ -192,7 +193,7 @@ def generate():
     upload_url = (
         supabase.storage.from_("storybook_pdfs").create_signed_upload_url(user.id + "/" + filename) # TODO could be security concern; replace signed upload url with diff method 
     )
-    response = (
+    upload_response = (
         supabase.storage
         .from_("storybook_pdfs")
         .upload_to_signed_url(
@@ -209,4 +210,57 @@ def generate():
         "pdf_path": user.id + "/" + filename
     }).execute()
     
-    return jsonify({"message": "Storybook generated successfully"}), 200
+    return jsonify({"message": "Storybook generated successfully", "pdf_data": b64encode(pdf_bytes).decode("utf-8")}), 200
+
+# @app.route("/generate", methods = ["POST"])
+# def generate():
+#     data = request.json
+#     with open("/home/ryanraen/storybooker/backend/res/final/bunny_learns_to_be_brave.pdf", "rb") as pdf_file:
+#         pdf_data = pdf_file.read()
+#         return jsonify({"message": "Storybook generated", "pdf_data": b64encode(pdf_data).decode("utf-8")}), 200
+#     return jsonify({"error": "Error"}), 500
+    
+@app.route("/get-history", methods = ["GET"])
+def get_history():
+    user, error = get_current_user()
+    if not user or error:
+        return error
+    
+    try:
+        storybooks = supabase.table("storybooks").select("id, title, created_at").eq("user_id", user.id).order("created_at", desc=True).execute().data
+        history = [{"id": book["id"], 
+                    "title": book["title"], 
+                    "date": book["created_at"]} 
+                   for book in storybooks]
+        return jsonify({"history": history}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+    
+@app.route("/download", methods = ["GET"])
+def download():
+    access_token = request.args.get("access_token")
+    user, error = get_current_user(access_token)
+    if not user or error:
+        return error
+    
+    storybook_id = request.args.get("storybook_id")
+    print(storybook_id)
+    if not storybook_id:
+        return jsonify({"error": "Missing storybook ID"}), 400
+    try:
+        storybook = supabase.table("storybooks").select("*").eq("id", storybook_id).eq("user_id", user.id).maybe_single().execute().data
+        if not storybook:
+            return jsonify({"error": "Storybook not found"}), 404
+        
+        pdf_data = supabase.storage.from_("storybook_pdfs").download(storybook["pdf_path"])
+
+        filename = storybook["title"][:50].replace(" ", "_") + ".pdf"
+        return Response(
+            pdf_data,
+            mimetype="application/pdf",
+            headers={
+                "Content-Disposition": f"attachment; filename={filename}"
+            }
+        )
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
