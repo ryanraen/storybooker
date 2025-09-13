@@ -8,9 +8,11 @@ import tempfile
 from PIL import Image
 from base64 import b64encode
 
+
 def create_app():
     app = Flask(__name__)
-    cors = CORS(app, origins=["https://storybooker.vercel.app"])
+    # cors = CORS(app, resources={r"/*": {"origins": "*"}})
+    CORS(app)
 
     dotenv.load_dotenv()
 
