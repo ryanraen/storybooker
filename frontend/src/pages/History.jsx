@@ -29,7 +29,7 @@ export default function HistoryPage() {
       }
     };
     fetchHistory();
-  })
+  }, [])
 
   const handleDownload = async (id) => {
     setError("");
