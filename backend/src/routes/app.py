@@ -11,7 +11,7 @@ from base64 import b64encode
 
 def create_app():
     app = Flask(__name__)
-    CORS(app, resources={r"/*": {"origins": "https://storybooker.vercel.app"}})
+    CORS(app, origins=["https://storybooker.vercel.app", "http://localhost:5173"])
 
     dotenv.load_dotenv()
 
@@ -209,13 +209,13 @@ def create_app():
         if not storybook_id:
             return jsonify({"error": "Missing storybook ID"}), 400
         try:
-            storybook = supabase.table("storybooks").select("*").eq("id", storybook_id).eq("user_id", user.id).maybe_single().execute().data
-            if not storybook:
+            storybook_data = supabase.table("storybooks").select("*").eq("id", storybook_id).eq("user_id", user.id).maybe_single().execute().data
+            if not storybook_data:
                 return jsonify({"error": "Storybook not found"}), 404
             
-            pdf_data = supabase.storage.from_("storybook_pdfs").download(storybook["pdf_path"])
+            pdf_data = supabase.storage.from_("storybook_pdfs").download(storybook_data["pdf_path"])
 
-            filename = storybook["title"][:50].replace(" ", "_") + ".pdf"
+            filename = storybook_data["title"][:50].replace(" ", "_") + ".pdf"
             return Response(
                 pdf_data,
                 mimetype="application/pdf",
@@ -225,5 +225,33 @@ def create_app():
             )
         except Exception as e:
             return jsonify({"error": str(e)}), 400
-
+        
+    @app.route("/book/delete", methods = ["DELETE"])
+    def delete():
+        access_token = request.args.get("access_token")
+        user, error = get_current_user(access_token)
+        if not user or error:
+            return error
+        
+        storybook_id = request.args.get("storybook_id")
+        print(storybook_id)
+        if not storybook_id:
+            return jsonify({"error": "Missing storybook ID"}), 400
+        try:
+            storybook_data = supabase.table("storybooks").select("*").eq("id", storybook_id).eq("user_id", user.id).maybe_single().execute().data
+            if not storybook_data:
+                return jsonify({"error": "Storybook not found"}), 404
+            
+            table_delete_response = supabase.table("storybooks").delete().eq("id", storybook_id).eq("user_id", user.id).execute()
+            if not table_delete_response:
+                return jsonify({"error": "Could not delete storybook from database"}), 400
+            
+            storage_delete_response = supabase.storage.from_("storybook_pdfs").remove([storybook_data["pdf_path"]])
+            if not storage_delete_response:
+                return jsonify({"error": "Could not delete storybook from storage"}), 400
+            
+            return jsonify({"message": "Storybook deleted successfully"}), 200
+        except Exception as e:
+            return jsonify({"error": str(e)}), 400
+        
     return app
