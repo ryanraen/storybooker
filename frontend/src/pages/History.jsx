@@ -10,16 +10,20 @@ import {
 } from "@mui/material";
 import DownloadIcon from "@mui/icons-material/Download";
 
+import DeleteButton from "../components/DeleteButton";
+
 export default function HistoryPage() {
   const [historyItems, setHistoryItems] = useState([]);
   const [error, setError] = useState("");
 
-  const downloadHref = `https://storybooker.fly.dev/book/download?access_token=${localStorage.getItem("token")}&storybook_id=${item.id}`;
+  const downloadHref = (item) => {
+    return `${import.meta.env.PROD ? import.meta.env.VITE_PROD_API_URL : import.meta.env.VITE_DEV_API_URL}/book/download?access_token=${localStorage.getItem("token")}&storybook_id=${item.id}`;
+  }
 
   useEffect(() => {
     const fetchHistory = async () => {
       try {
-        const res = await fetch("https://storybooker.fly.dev/get-history", {
+        const res = await fetch(`${import.meta.env.PROD ? import.meta.env.VITE_PROD_API_URL : import.meta.env.VITE_DEV_API_URL}/get-history`, {
           method: "GET",
           headers: {
             "Content-Type": "image/png",
@@ -67,19 +71,22 @@ export default function HistoryPage() {
             />
 
             <IconButton
-              href={downloadHref}
-              color="inherit"
+              href={downloadHref(item)}
               size="large"
+              aria-label="Download"
               sx={{
                 bgcolor: "#EEE",
                 "&:hover": { bgcolor: "#AAA" },
                 textTransform: "none",
                 borderRadius: 2,
                 py: 1.2,
+                px: 1.2
               }}
             >
               <DownloadIcon />
             </IconButton>
+
+            <DeleteButton item={item}/>
           </ListItem>
         ))}
       </List>

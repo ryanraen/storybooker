@@ -6,7 +6,7 @@ export default function LogoutButton() {
 
     const handleLogout = async () => {
         try {
-            const res = await fetch("https://storybooker.fly.dev/user/logout", {
+            const res = await fetch(`${import.meta.env.PROD ? import.meta.env.VITE_PROD_API_URL : import.meta.env.VITE_DEV_API_URL}/user/logout`, {
                 method: "POST",
             });
 

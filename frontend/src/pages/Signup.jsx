@@ -26,7 +26,7 @@ export default function Signup() {
     setDisabled(true);
 
     try {
-      const res = await fetch("https://storybooker.fly.dev/user/signup", {
+      const res = await fetch(`${import.meta.env.PROD ? import.meta.env.VITE_PROD_API_URL : import.meta.env.VITE_DEV_API_URL}/user/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, username, password }),
@@ -35,7 +35,9 @@ export default function Signup() {
       if (!res.ok) throw new Error("Signup failed");
 
       const data = await res.json();
-      navigate("/login");
+      navigate("/login", {
+                state: { successMessage: "Please check your inbox to confirm your email." },
+            });
     } catch (err) {
       setError("Unable to create account");
       console.log(err.message);

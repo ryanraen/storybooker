@@ -26,7 +26,7 @@ export default function Login() {
     setDisabled(true);
 
     try {
-      const res = await fetch("https://storybooker.fly.dev/user/login", {
+      const res = await fetch(`${import.meta.env.PROD ? import.meta.env.VITE_PROD_API_URL : import.meta.env.VITE_DEV_API_URL}/user/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),

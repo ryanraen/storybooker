@@ -1,20 +1,22 @@
 import { useState } from "react";
 import { Typography, Paper, Button, Stack, TextField } from "@mui/material";
+import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
 
 export default function Generate() {
   const [title, setTitle] = useState("");
   const [prompt, setPrompt] = useState("");
   const [error, setError] = useState("");
   const [pdf, setPdf] = useState("");
-  const [disabled, setDisabled] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleGenerate = async (e) => {
     e.preventDefault();
     setError("");
-    setDisabled(true);
+    setLoading(true);
+    setPdf("");
 
     try {
-      const res = await fetch("https://storybooker.fly.dev/generate", {
+      const res = await fetch(`${import.meta.env.PROD ? import.meta.env.VITE_PROD_API_URL : import.meta.env.VITE_DEV_API_URL}/generate`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -31,6 +33,7 @@ export default function Generate() {
       setError("Generation request failed");
       console.log(err.message);
     }
+    setLoading(false)
   };
 
   return (
@@ -75,7 +78,7 @@ export default function Generate() {
               borderRadius: 2,
               py: 1.2,
             }}
-            disabled={disabled}
+            loading={loading}
           >
             Generate
           </Button>
