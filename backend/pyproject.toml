@@ -1,7 +1,7 @@
 [project]
-name = "comic-agent"
+name = "storybooker"
 version = "0.1.0"
-description = "An LLM-based agent for generating children's comics with minimal effort."
+description = "An autonomous AI agent that generates fully illustrated children’s comic books from a single prompt."
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
@@ -17,4 +17,5 @@ dependencies = [
     "pillow>=11.3.0",
     "strands-agents>=0.3.0",
     "supabase>=2.18.1",
+    "waitress>=3.0.2",
 ]
