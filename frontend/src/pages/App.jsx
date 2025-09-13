@@ -159,14 +159,14 @@ export default function App() {
             See Example Storybooks
           </Typography>
           <Typography variant="h6" color="text.secondary">
-            Browse through some of the magical storybooks our agent can create
+            Browse through some of the magical storybooks our AI agent can create
             from just one idea.
           </Typography>
         </Box>
 
         <Grid container spacing={4}>
           {examples.map((example, index) => (
-            <Grid item xs={12} sm={6} md={3} key={index}>
+            <Grid item xs={12} sm={6} md={3} key={index} margin="auto" >
               <Card
                 sx={{
                   borderRadius: "20px",
