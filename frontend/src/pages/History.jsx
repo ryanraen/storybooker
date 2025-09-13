@@ -1,10 +1,55 @@
-import { Typography, Paper, List, ListItem, ListItemText } from "@mui/material";
-
-const historyItems = [
-// eg. { id: 1, title: "The Honest Dragon", date: "Aug 20, 2025" }, 
-];
+import { useState, useEffect } from 'react';
+import { Typography, Paper, List, ListItem, ListItemText, Button, IconButton } from "@mui/material";
+import DownloadIcon from '@mui/icons-material/Download';
 
 export default function HistoryPage() {
+
+  const [historyItems, setHistoryItems] = useState([]);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const fetchHistory = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/get-history", {
+          method: "GET",
+          headers: {
+            "Content-Type": "image/png",
+            "Content-Disposition": "attachment",
+            "Authorization": `Bearer ${localStorage.getItem("token")}`
+          },
+        });
+
+        if (!res.ok) throw new Error("Failed to fetch history");
+
+        const data = await res.json();
+        setHistoryItems(data.history);
+      } catch (err) {
+        setError("Could not load history");
+        console.log(err.message);
+      }
+    };
+    fetchHistory();
+  })
+
+  const handleDownload = async (id) => {
+    setError("");
+
+    try {
+      const res = await fetch("http://localhost:5000/download?storybook_id=" + id, {
+        method: "GET",
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${localStorage.getItem("token")}` },
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+
+      return (data.pdf_data);
+    } catch (err) {
+      setError("Unable to download storybook");
+      console.log(err.message);
+    }
+  }
+
   return (
     <Paper sx={{ p: 5, borderRadius: 3, boxShadow: 2, bgcolor: "white" }}>
       <Typography variant="h5" fontWeight="bold" gutterBottom>
@@ -13,7 +58,6 @@ export default function HistoryPage() {
       <Typography color="text.secondary" gutterBottom>
         Previously generated storybooks.
       </Typography>
-
       <List sx={{ mt: 2 }}>
         {historyItems.map((item) => (
           <ListItem
@@ -24,14 +68,34 @@ export default function HistoryPage() {
               "&:hover": { bgcolor: "#f9fafb" },
             }}
           >
+
             <ListItemText
               primary={item.title}
-              secondary={item.date}
-              primaryTypographyProps={{ fontWeight: 500 }}
+              secondary={new Date(item.date.slice(0, 10)).toLocaleDateString("en-US", { year: 'numeric', month: 'long', day: 'numeric' })}
             />
+
+            <IconButton
+              href={`http://localhost:5000/download?access_token=${localStorage.getItem("token")}&storybook_id=${item.id}`}
+              color="inherit"
+              size="large"
+              sx={{
+                bgcolor: "#EEE",
+                "&:hover": { bgcolor: "#AAA" },
+                textTransform: "none",
+                borderRadius: 2,
+                py: 1.2,
+              }}
+            >
+              <DownloadIcon />
+            </IconButton>
           </ListItem>
         ))}
       </List>
+      {error && (
+        <Typography color="error" fontSize="0.9rem">
+          {error}
+        </Typography>
+      )}
     </Paper>
   );
 }
