@@ -1,2 +1,1 @@
-# Modify this Procfile to fit your needs
-web: gunicorn routes:app
+gunicorn --bind 127.0.0.1:5000 src.server:gunicorn_app
