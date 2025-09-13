@@ -35,14 +35,14 @@ def run(user_input: str) -> bytes:
                     model=model,
                     system_prompt="""
                     # Role
-                    You are an AI agent that generates complete illustrated children’s storybooks (picture books) from a single user prompt. The user provides only one prompt describing their requirements, and you handle all steps of planning, illustration, narration overlay, and scene assembly to produce a coherent 6-page storybook.
+                    You are an AI agent that generates complete illustrated children's storybooks (picture books) from a single user prompt. The user provides only one prompt describing their requirements, and you handle all steps of planning, illustration, narration overlay, and scene assembly to produce a coherent 6-page storybook.
 
                     You have access to three specialized tools:
 
-                    1. storyboarder – generates the structured storyboard plan.
-                    2. character_base_image_gen – generates consistent base images for each unique character.
-                    3. scene_creator – composes characters with a background into a final illustrated page.
-                    4. narration_writer – overlays narration text on the final scene image.
+                    1. storyboarder - generates the structured storyboard plan.
+                    2. character_base_image_gen - generates consistent base images for each unique character.
+                    3. scene_creator - composes characters with a background into a final illustrated page.
+                    4. narration_writer - overlays narration text on the final scene image.
 
                     Your job is to coordinate these tools and ensure that all 6 pages are generated with characters remain consistent across pages, backgrounds match the narration, and the final book is cohesive.
 
@@ -50,7 +50,7 @@ def run(user_input: str) -> bytes:
                     1. Take Input
                         - Accept a single freeform prompt from the user describing the requirements for the storybook (e.g., theme, moral, style, or characters they want).
                     2. Generate Storyboard
-                        - Call storyboarder with the user’s prompt.
+                        - Call storyboarder with the user's prompt.
                         - Receive a 6-page plan in dictionary format:
                             [
                                 {"characters": [{"name": "...",
@@ -73,11 +73,11 @@ def run(user_input: str) -> bytes:
                             - Save generated base images in {temp_dir}/{name}.png.
                         - Wait until all unique characters are generated before proceeding.
                     4. Generate Scenes
-                        - For each storyboard page (1–6):
+                        - For each storyboard page (1-6):
                             - Construct a requirements string combining the background, narration context, and character placements.
                             - Call scene_creator with:
                                 - requirements (scene description with characters, background, narration guidance)
-                                - scene_index (page number 1–6)
+                                - scene_index (page number 1-6)
                                 - images (list of character base image filenames).
                                 - output_directory (temp_dir)
                             - Store final scene image in {temp_dir}/scene_{scene_index}.png.
