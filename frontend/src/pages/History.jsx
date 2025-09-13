@@ -10,7 +10,7 @@ export default function HistoryPage() {
   useEffect(() => {
     const fetchHistory = async () => {
       try {
-        const res = await fetch("http://localhost:5000/get-history", {
+        const res = await fetch("https://storybooker-api.vercel.app/get-history", {
           method: "GET",
           headers: {
             "Content-Type": "image/png",
@@ -35,7 +35,7 @@ export default function HistoryPage() {
     setError("");
 
     try {
-      const res = await fetch("http://localhost:5000/download?storybook_id=" + id, {
+      const res = await fetch("https://storybooker-api.vercel.app/download?storybook_id=" + id, {
         method: "GET",
         headers: { "Content-Type": "application/json", "Authorization": `Bearer ${localStorage.getItem("token")}` },
       });
@@ -75,7 +75,7 @@ export default function HistoryPage() {
             />
 
             <IconButton
-              href={`http://localhost:5000/download?access_token=${localStorage.getItem("token")}&storybook_id=${item.id}`}
+              href={`https://storybooker-api.vercel.app/download?access_token=${localStorage.getItem("token")}&storybook_id=${item.id}`}
               color="inherit"
               size="large"
               sx={{

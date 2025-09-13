@@ -13,7 +13,7 @@ export default function Generate() {
     setError("");
 
     try {
-      const res = await fetch("http://localhost:5000/generate", {
+      const res = await fetch("https://storybooker-api.vercel.app/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json", "Authorization": `Bearer ${localStorage.getItem("token")}` },
         body: JSON.stringify({ title, prompt }),

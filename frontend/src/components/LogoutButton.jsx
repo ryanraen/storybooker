@@ -6,7 +6,7 @@ export default function LogoutButton() {
 
     const handleLogout = async () => {
         try {
-            const res = await fetch("http://localhost:5000/user/logout", {
+            const res = await fetch("https://storybooker-api.vercel.app/user/logout", {
                 method: "POST",
             });
 
