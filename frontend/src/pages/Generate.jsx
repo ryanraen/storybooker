@@ -6,24 +6,25 @@ export default function Generate() {
   const [title, setTitle] = useState("");
   const [prompt, setPrompt] = useState("");
   const [error, setError] = useState("");
+  const [pdf, setPdf] = useState("");
 
   const handleGenerate = async (e) => {
     e.preventDefault();
     setError("");
 
     try {
-      const response = await fetch("http://localhost:5000/generate", {
+      const res = await fetch("http://localhost:5000/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json", "Authorization": `Bearer ${localStorage.getItem("token")}` },
         body: JSON.stringify({ title, prompt }),
       });
 
-      if (!response.ok) throw new Error("Generation failed");
+      if (!res.ok) throw new Error("Generation failed");
 
-      const data = await response.json();
-      console.log(data.message);
+      const data = await res.json()
+      setPdf(data.pdf_data);
     } catch (err) {
-      setError("Invalid generation request");
+      setError("Generation request failed");
       console.log(err.message);
     }
   };
@@ -79,6 +80,15 @@ export default function Generate() {
             </Typography>
           )}
         </Stack>
+        {pdf && (
+          <embed
+            src={`data:application/pdf;base64,${pdf}`}
+            type="application/pdf"
+            width="100%"
+            height="600px"
+            style={{ marginTop: "20px", borderRadius: "8px", boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)" }}
+          />
+        )}
       </form>
     </Paper>
   );
