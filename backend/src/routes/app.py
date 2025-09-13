@@ -22,7 +22,6 @@ def create_app():
     # TODO user should be able to:
     # update profile (email, password, etc.)
     # preview storybook without downloading
-    # delete history 
 
     # User
     @app.route("/user/signup", methods = ["POST"])

@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Typography, Paper, Button, Stack, TextField } from "@mui/material";
-import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
 
 export default function Generate() {
   const [title, setTitle] = useState("");
@@ -24,13 +23,17 @@ export default function Generate() {
         },
         body: JSON.stringify({ title, prompt }),
       });
-
-      if (!res.ok) throw new Error("Generation failed");
-
+      
       const data = await res.json();
+      if (res.status === 403) {
+        throw new Error(data.message);
+      } else if (!res.ok) {
+        throw new Error("Generation request failed");
+      }
+      
       setPdf(data.pdf_data);
     } catch (err) {
-      setError("Generation request failed");
+      setError(err.message);
       console.log(err.message);
     }
     setLoading(false)
