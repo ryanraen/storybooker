@@ -8,6 +8,7 @@ cachetools==5.5.2
 certifi==2025.8.3
 charset-normalizer==3.4.3
 click==8.2.1
+cv==1.0.0
 deprecation==2.1.0
 distro==1.9.0
 docstring-parser==0.17.0

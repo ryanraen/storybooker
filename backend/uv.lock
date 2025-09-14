@@ -180,6 +180,15 @@ wheels = [
 ]
 
 [[package]]
+name = "cv"
+version = "1.0.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/68/0e/439bf70a0d11b426223a408ee2e5abd8706d9deec32850645c4154ff7de3/cv-1.0.0.tar.gz", hash = "sha256:71a358ea3ce4cd84bc3286354bd7e88040fb9e0fdfef1aee848523660f0f79bf", size = 4404, upload-time = "2019-09-19T16:32:28.39Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/97/96/a62c28bdfd73c6d2e3833c6cabc04a6a2f17e5a10c586ca7aa1cb9be2a93/cv-1.0.0-py3-none-any.whl", hash = "sha256:27595b9f136040a745f4626c40075dadf332c0e99a6e9728f9a237be26b8c30b", size = 7309, upload-time = "2019-09-19T16:32:26.886Z" },
+]
+
+[[package]]
 name = "deprecation"
 version = "2.1.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1531,6 +1540,7 @@ dependencies = [
     { name = "certifi" },
     { name = "charset-normalizer" },
     { name = "click" },
+    { name = "cv" },
     { name = "deprecation" },
     { name = "distro" },
     { name = "docstring-parser" },
@@ -1632,6 +1642,7 @@ requires-dist = [
     { name = "certifi", specifier = "==2025.8.3" },
     { name = "charset-normalizer", specifier = "==3.4.3" },
     { name = "click", specifier = "==8.2.1" },
+    { name = "cv", specifier = ">=1.0.0" },
     { name = "deprecation", specifier = "==2.1.0" },
     { name = "distro", specifier = "==1.9.0" },
     { name = "docstring-parser", specifier = "==0.17.0" },
