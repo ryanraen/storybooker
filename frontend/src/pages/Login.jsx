@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Box,
   Paper,
@@ -20,17 +20,26 @@ export default function Login() {
   const [error, setError] = useState("");
   const [disabled, setDisabled] = useState(false);
 
+  useEffect(() => {
+    if (localStorage.getItem("token") !== null) {
+      navigate("/dashboard");
+    }
+  }, []);
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
     setDisabled(true);
 
     try {
-      const res = await fetch(`${import.meta.env.PROD ? import.meta.env.VITE_PROD_API_URL : import.meta.env.VITE_DEV_API_URL}/user/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
+      const res = await fetch(
+        `${import.meta.env.PROD ? import.meta.env.VITE_PROD_API_URL : import.meta.env.VITE_DEV_API_URL}/user/login`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
+        }
+      );
 
       if (!res.ok) throw new Error("Login failed");
 
@@ -80,7 +89,7 @@ export default function Login() {
           height: "100%",
           bgcolor: "rgba(255,255,255,0.6)", // light tint overlay
           zIndex: 1,
-      }}
+        }}
       />
 
       <Paper

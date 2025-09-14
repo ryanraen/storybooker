@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Routes, Route, Link, useLocation, useNavigate } from "react-router";
 import {
   Box,
@@ -20,12 +21,19 @@ import LogoutButton from "../components/LogoutButton";
 const drawerWidth = 240;
 
 export default function Dashboard() {
+  const navigate = useNavigate();
   const location = useLocation();
 
   const navItems = [
     { text: "Generate", icon: <AutoAwesome />, path: "generate" },
     { text: "History", icon: <History />, path: "history" },
   ];
+
+  useEffect(() => {
+    if (localStorage.getItem("token") === null) {
+      navigate("/login");
+    }
+  }, []);
 
   return (
     <Box sx={{ display: "flex", bgcolor: "#f9fafb", minHeight: "100vh" }}>
