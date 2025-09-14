@@ -13,7 +13,7 @@ def run(user_input: str) -> bytes:
         print(f"Using temporary directory: {temp_dir}")
         mcp_client = MCPClient(lambda: stdio_client(StdioServerParameters(
             command="python",
-            args=["../services/mcpserver.py"]
+            args=["src/services/mcpserver.py"] # docker deployment copies /backend to /app as WORKDIR; use ../services/mcpserver.py if running local
         )))
 
         print("Setting up OpenAI model...")
