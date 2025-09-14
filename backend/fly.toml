@@ -7,10 +7,10 @@ app = 'storybooker'
 primary_region = 'yyz'
 
 [build]
-  [build.buildpacks]
-    python = "paketo-buildpacks/python"
-  [build.args]
-    BP_CPYTHON_VERSION = "3.12.*"
+  builder = "paketobuildpacks/builder:base"
+  buildpack = ["paketo-buildpacks/python"]
+[build.args]
+  BP_CPYTHON_VERSION = "3.11.4"
 
 [env]
   PORT = '8080'
