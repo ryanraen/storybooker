@@ -15,15 +15,18 @@ export default function Generate() {
     setPdf("");
 
     try {
-      const res = await fetch(`${import.meta.env.PROD ? import.meta.env.VITE_PROD_API_URL : import.meta.env.VITE_DEV_API_URL}/generate`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: JSON.stringify({ title, prompt }),
-      });
-      
+      const res = await fetch(
+        `${import.meta.env.PROD ? import.meta.env.VITE_PROD_API_URL : import.meta.env.VITE_DEV_API_URL}/generate`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify({ title, prompt }),
+        }
+      );
+
       const data = await res.json();
       if (res.status === 403) {
         throw new Error(data.error);
@@ -36,7 +39,7 @@ export default function Generate() {
       setError(err.message);
       console.log(err.message);
     }
-    setLoading(false)
+    setLoading(false);
   };
 
   return (
@@ -45,7 +48,11 @@ export default function Generate() {
         p: 5,
         borderRadius: 3,
         boxShadow: 2,
+        width: "100%",
+        maxWidth: "100%",
         bgcolor: "white",
+        position: "relative",
+        zIndex: 2,
       }}
     >
       <Typography variant="h5" fontWeight="bold" gutterBottom>

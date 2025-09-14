@@ -51,11 +51,14 @@ export default function ForgotPassword() {
     setMessage("");
 
     try {
-      const res = await fetch(`${import.meta.env.PROD ? import.meta.env.VITE_PROD_API_URL : import.meta.env.VITE_DEV_API_URL}/user/verify-otp`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, otp, password }),
-      });
+      const res = await fetch(
+        `${import.meta.env.PROD ? import.meta.env.VITE_PROD_API_URL : import.meta.env.VITE_DEV_API_URL}/user/verify-otp`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, otp, password }),
+        }
+      );
 
       if (!res.ok) throw new Error("OTP verification failed");
 
@@ -80,17 +83,47 @@ export default function ForgotPassword() {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        bgcolor: "#f9fafb",
-        p: 2,
+        position: "relative",
+        overflow: "hidden",
       }}
     >
+      <Box
+        sx={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          backgroundImage: "url('/storybooker-background.png')", // bg image
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          filter: "blur(5px)",
+          transform: "scale(1.1)", // prevent edge cutoff
+          zIndex: 0,
+        }}
+      />
+
+      <Box
+        sx={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          bgcolor: "rgba(255,255,255,0.6)", // light tint overlay
+          zIndex: 1,
+        }}
+      />
       <Paper
         sx={{
           p: 5,
           borderRadius: 3,
           boxShadow: 3,
-          maxWidth: 420,
           width: "100%",
+          maxWidth: 420,
+          bgcolor: "white",
+          position: "relative",
+          zIndex: 2,
         }}
       >
         <Typography variant="h5" fontWeight="bold" gutterBottom>

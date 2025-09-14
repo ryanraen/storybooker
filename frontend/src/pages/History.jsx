@@ -18,19 +18,22 @@ export default function HistoryPage() {
 
   const downloadHref = (item) => {
     return `${import.meta.env.PROD ? import.meta.env.VITE_PROD_API_URL : import.meta.env.VITE_DEV_API_URL}/book/download?access_token=${localStorage.getItem("token")}&storybook_id=${item.id}`;
-  }
+  };
 
   useEffect(() => {
     const fetchHistory = async () => {
       try {
-        const res = await fetch(`${import.meta.env.PROD ? import.meta.env.VITE_PROD_API_URL : import.meta.env.VITE_DEV_API_URL}/get-history`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "image/png",
-            "Content-Disposition": "attachment",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
+        const res = await fetch(
+          `${import.meta.env.PROD ? import.meta.env.VITE_PROD_API_URL : import.meta.env.VITE_DEV_API_URL}/get-history`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "image/png",
+              "Content-Disposition": "attachment",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
 
         if (!res.ok) throw new Error("Failed to fetch history");
 
@@ -45,7 +48,18 @@ export default function HistoryPage() {
   }, []);
 
   return (
-    <Paper sx={{ p: 5, borderRadius: 3, boxShadow: 2, bgcolor: "white" }}>
+    <Paper
+      sx={{
+        p: 5,
+        borderRadius: 3,
+        boxShadow: 2,
+        width: "100%",
+        maxWidth: "100%",
+        bgcolor: "white",
+        position: "relative",
+        zIndex: 2,
+      }}
+    >
       <Typography variant="h5" fontWeight="bold" gutterBottom>
         History
       </Typography>
@@ -80,13 +94,13 @@ export default function HistoryPage() {
                 textTransform: "none",
                 borderRadius: 2,
                 py: 1.2,
-                px: 1.2
+                px: 1.2,
               }}
             >
               <DownloadIcon />
             </IconButton>
 
-            <DeleteButton item={item}/>
+            <DeleteButton item={item} />
           </ListItem>
         ))}
       </List>

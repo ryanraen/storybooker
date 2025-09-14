@@ -100,15 +100,58 @@ export default function Dashboard() {
           flexGrow: 1,
           p: 4,
           mt: 8,
+          minHeight: "100vh",
+          alignItems: "center",
+          justifyContent: "center",
+          position: "relative",
+          overflow: "hidden",
         }}
       >
+        <Box
+          sx={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            backgroundImage: "url('/storybooker-background.png')", // bg image
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            filter: "blur(5px)",
+            transform: "scale(1.1)", // prevent edge cutoff
+            zIndex: 0,
+          }}
+        />
+
+        <Box
+          sx={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            bgcolor: "rgba(255,255,255,0.6)", // light tint overlay
+            zIndex: 1,
+          }}
+        />
         <Routes>
           <Route path="generate" element={<Generate />} />
           <Route path="history" element={<HistoryPage />} />
           <Route
             path="*"
             element={
-              <Paper sx={{ p: 5, borderRadius: 3, boxShadow: 2 }}>
+              <Paper
+                sx={{
+                  p: 5,
+                  borderRadius: 3,
+                  boxShadow: 2,
+                  width: "100%",
+                  maxWidth: "100%",
+                  bgcolor: "white",
+                  position: "relative",
+                  zIndex: 2,
+                }}
+              >
                 <Typography variant="h5" fontWeight="bold" gutterBottom>
                   Welcome to the Dashboard
                 </Typography>
