@@ -38,11 +38,11 @@ export default function App() {
     },
     {
       title: "Personalize the Story",
-      desc: "Choose favorite characters, settings, and other elements that resonate with your child.",
+      desc: "Add favorite characters, settings, and other elements that resonate with your child.",
     },
     {
       title: "Generate & Share",
-      desc: "Get an interactive storybook instantly, ready to read, share, or print.",
+      desc: "Get an interactive storybook in minutes, ready to read, share, or print.",
     },
   ];
 
@@ -324,7 +324,7 @@ export default function App() {
         </Box>
 
         {/* Footer */}
-        <Box sx={{ py: 5, textAlign: "center", color: "text.secondary" }}>
+        <Box sx={{ py: 5, textAlign: "center", bgcolor: "white", color: "text.secondary" }}>
           © {new Date().getFullYear()} Storybooker. No rights reserved.
         </Box>
       </Box>
