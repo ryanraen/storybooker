@@ -57,7 +57,7 @@ def storyboarder(prompt: str) -> dict:
             - background: point form physical description of the background scene (eg. "grass field, sunny, clouds, sparse trees, house in the distance")
             - narration: one line that the narrator should say
         2. Keep it engaging and age-appropriate
-        3. Do not use non-conventional ASCII characters (eg. please only use the character ' to represent apostrophes; do not use non-human variations like ’)
+        3. ONLY use standard ASCII characters (eg. use the character "'" to represent apostrophes; do not use non-standard ASCII like "’")
         4. Return it as a JSON list of 6 panels like this:
             [
                 {"characters": [{"name": "...",
